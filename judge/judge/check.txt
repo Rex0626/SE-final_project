@@ -1,0 +1,126 @@
+<?php
+// 啟動 session
+session_start();
+
+// 檢查是否登入成功，並取得 jname
+if (!isset($_SESSION['jname'])) {
+    // 如果沒有登入，重新導向到登入頁面
+    header("Location: judge.php");
+    exit;
+}
+
+$jname = $_SESSION['jname']; // 從 session 取得 jname
+
+// MySQL 資料庫連線設定
+$servername = "localhost";
+$username = "root"; // 替換為 MySQL 使用者名稱
+$password = "12345678"; // 替換為 MySQL 密碼
+$dbname = "judge"; // 替換為實際資料庫名稱
+
+// 建立連線
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// 檢查連線是否成功
+if ($conn->connect_error) {
+    die("連線失敗: " . $conn->connect_error);
+}
+
+// 查詢資料庫，根據 jname 取得資料
+$sql = "SELECT * FROM judge_data WHERE jid = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $jname);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    // 資料查詢成功，取得資料
+    $row = $result->fetch_assoc();
+    $jid = $row['jid'];
+    $jname = $row['jname'];
+    $jtitle = $row['jtitle'];
+    $jphone = $row['jphone'];
+    $jemail = $row['jemail'];
+} else {
+    $error_message = "找不到相關資料";
+}
+
+$stmt->close();
+$conn->close();
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>評審委員資料</title>
+    <style>
+        body {
+            font-family: Microsoft JhengHei;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+        h2 {
+            text-align: center;
+            color: #635031;
+        }
+        .info {
+            margin: 15px 0;
+            font-size: 18px;
+        }
+        .back-btn {
+            background-color: #b58c51;
+            border: none;
+            color: white;
+            font-size: 16px;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto;
+        }
+        .back-btn:hover {
+            background-color: #946f3a;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>歡迎，<?php echo htmlspecialchars($jname); ?>!</h2>
+        <p>以下是您的個人資料：</p>
+
+        <div class="info">
+            <strong>評審編號：</strong> <?php echo htmlspecialchars($jid); ?>
+        </div>
+        <div class="info">
+            <strong>姓名：</strong> <?php echo htmlspecialchars($jname); ?>
+        </div>
+        <div class="info">
+            <strong>職稱：</strong> <?php echo htmlspecialchars($jtitle); ?>
+        </div>
+        <div class="info">
+            <strong>電話：</strong> <?php echo htmlspecialchars($jphone); ?>
+        </div>
+        <div class="info">
+            <strong>電子郵件：</strong> <?php echo htmlspecialchars($jemail); ?>
+        </div>
+
+        <!-- 回到上一頁按鈕 -->
+        <a href="main1.php">
+            <button class="back-btn">回到主頁</button>
+        </a>
+
+    </div>
+
+</body>
+</html>
+
+

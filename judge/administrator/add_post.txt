@@ -1,0 +1,134 @@
+<?php
+// 啟動 session
+session_start();
+
+// MySQL 資料庫連線設定
+$servername = "localhost";
+$username = "root"; // 替換為 MySQL 使用者名稱
+$password = "12345678"; // 替換為 MySQL 密碼
+$dbname = "judge"; // 替換為實際資料庫名稱
+
+// 建立連線
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// 檢查連線是否成功
+if ($conn->connect_error) {
+    die("連線失敗: " . $conn->connect_error);
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // 處理表單提交
+    $postdate = date("Y-m-d H:i:s"); // 自動設置當前時間為發布日期
+    $word = $_POST['word']; // 公告內容
+    $paper = $_POST['paper']; // 直接使用連結作為海報網址
+
+    // 插入資料庫
+    $sql = "INSERT INTO post (postdate, word, paper) VALUES ('$postdate', '$word', '$paper')";
+
+    if ($conn->query($sql) === TRUE) {
+        $success_message = "公告已成功發布！";
+    } else {
+        $error_message = "錯誤：無法發布公告。";
+    }
+}
+
+$conn->close();
+?>
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>發布公告</title>
+</head>
+<style>
+    body {
+        font-family: Microsoft JhengHei;
+        background-color: #f5f5f5;
+        padding: 20px;
+    }
+    .container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        margin: auto;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .form-group label {
+        font-weight: bold;
+    }
+    .form-group textarea {
+        width: 100%;
+        height: 150px;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+    .form-group input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+    .btn-submit {
+        background-color: #5cb85c;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .btn-submit:hover {
+        background-color: #4cae4c;
+    }
+    .message {
+        margin-top: 20px;
+        padding: 10px;
+        border-radius: 5px;
+    }
+    .success {
+        background-color: #dff0d8;
+        color: #3c763d;
+    }
+    .error {
+        background-color: #f2dede;
+        color: #a94442;
+    }
+</style>
+<body>
+    <div class="container">
+        <h2>發布公告</h2>
+        <form method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="word">公告內容</label>
+                <textarea id="word" name="word" required></textarea>
+            </div>
+                <!-- 海報上傳 -->
+    	<div class="form-group">
+        	<label for="paper">上傳海報</label>
+        	<input type="file" id="paper" name="paper" accept="image/*" required>
+    	</div>
+
+            <div class="form-group">
+                <button type="submit" class="btn-submit">發布公告</button>
+            </div>
+        </form>
+
+        <?php if (isset($success_message)) { ?>
+            <div class="message success">
+                <?php echo $success_message; ?>
+            </div>
+        <?php } elseif (isset($error_message)) { ?>
+            <div class="message error">
+                <?php echo $error_message; ?>
+            </div>
+        <?php } ?>
+    </div>
+</body>
+</html>
+
