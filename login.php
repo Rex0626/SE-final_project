@@ -12,6 +12,8 @@ $validRoles = ['student', 'admin', 'teacher', 'judge'];
 // 驗證角色是否合法
 if (!in_array($expectedRole, $validRoles)) {
     echo "<p style='color:red;'>❌ 非法進入登入頁面，請從正確子系統進入</p>";
+    echo "<p>⏳ 5 秒後將自動返回主網頁...</p>";
+    echo "<script>setTimeout(() => { window.location.href = 'main.html'; }, 5000);</script>";
     exit();
 }
 
@@ -42,6 +44,8 @@ if ($httpcode === 200) {
 } else {
     echo "<p style='color:red;'>❌ 連接 Supabase 失敗，HTTP 狀態碼：$httpcode</p>";
     echo "<pre>$response</pre>";
+    echo "<p>⏳ 5 秒後將自動返回主網頁...</p>";
+    echo "<script>setTimeout(() => { window.location.href = 'main.html'; }, 5000);</script>";
     exit();
 }
 
@@ -94,9 +98,13 @@ if (is_array($users) && count($users) === 1) {
         exit();
     } else {
         echo "<p style='color:red;'>❌ 密碼錯誤</p>";
+        echo "<p>⏳ 5 秒後將自動返回主網頁...</p>";
+        echo "<script>setTimeout(() => { window.location.href = 'main.html'; }, 5000);</script>";
     }
 } else {
     echo "<p style='color:red;'>❌ 查無此帳號</p>";
     echo "<pre>$response</pre>";
+    echo "<p>⏳ 5 秒後將自動返回主網頁...</p>";
+    echo "<script>setTimeout(() => { window.location.href = 'main.html'; }, 5000);</script>";
 }
 ?>
