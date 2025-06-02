@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高雄大學激發學生創意競賽管理系統</title>
+    <link rel="stylesheet" href="main/styles.css">
+</head>
+
+<body>
+    <header>
+        <h1>高雄大學激發學生創意競賽管理系統</h1>
+    </header>
+
+    <div class="subsystem-container">
+        <div class="subsystem">
+            <a href="login.html?role=Admin">管理員</a>
+        </div>
+        <div class="subsystem">
+            <a href="login.html?role=Student">學生</a>
+        </div>
+        <div class="subsystem">
+            <a href="login.html?role=Teacher">老師</a>
+        </div>
+        <div class="subsystem">
+            <a href="login.html?role=Judge">評審</a>    
+        </div>
+    </div>    
+
+    <div class="carousel">
+        <div class="carousel-images" id="carousel-images">
+            <img src="main/1.jpg" alt="公告圖片1" onclick="openModal(this)">
+            <img src="main/2.jpg" alt="公告圖片2" onclick="openModal(this)">
+            <img src="main/3.jpg" alt="公告圖片3" onclick="openModal(this)">
+        </div>
+        <div class="carousel-buttons">
+            <button onclick="prevSlide()">&#10094;</button>
+            <button onclick="nextSlide()">&#10095;</button>
+        </div>
+    </div>    
+    
+    <div class="news-container">
+        <div class="news-header">
+            <span>最新消息</span>
+        </div>
+        <ul class="news-list">
+            <li class="news-item">
+                <a href="link1.html">【系所】</a>
+                <span class="news-date">2024-11-01</span>
+            </li>
+            <li class="news-item">
+                <a href="link2.html">【系所】</a>
+                <span class="news-date">2024-10-29</span>
+            </li>
+            <li class="news-item">
+                <a href="link3.html">【獲獎】</a>
+                <span class="news-date">2024-08-01</span>
+            </li>
+            <li class="news-item">
+                <a href="link4.html">【系所】</a>
+                <span class="news-date">2024-07-17</span>
+            </li>
+            <li class="news-item">
+                <a href="link5.html">【競賽】</a>
+                <span class="news-date">2024-05-08</span>
+            </li>
+        </ul>
+        <div class="more-link">
+            <a href="more.html">更多消息...</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 國立高雄大學 - 激發學生創意競賽管理系統</p>
+    </footer>
+
+    <script src="main/scripts.js"></script> <!-- 引入 JavaScript 文件 -->
+
+</body>
+
+</html>

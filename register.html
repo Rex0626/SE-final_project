@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>註冊頁面</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f4f4f9;
+            padding-top: 50px;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 450px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .btn-primary {
+            background-color: #4CAF50;
+            border-color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>使用者註冊</h2>
+        <form action="register.php" method="POST">
+            <div class="form-group">
+                <label for="name">姓名</label>
+                <input type="text" class="form-control" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">電子郵件</label>
+                <input type="email" class="form-control" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">電話</label>
+                <input type="text" class="form-control" name="phone" required>
+            </div>
+            <div class="form-group">
+                <label for="password">密碼</label>
+                <input type="password" class="form-control" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="role">角色</label>
+                <select name="role" class="form-control" required>
+                    <option value="" disabled selected>請選擇角色</option>
+                    <option value="student">學生</option>
+                    <option value="teacher">老師</option>
+                    <option value="judge">評審</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">註冊</button>
+        </form>
+    </div>
+</body>
+</html>
