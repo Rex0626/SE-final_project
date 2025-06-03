@@ -79,20 +79,21 @@ if (is_array($users) && count($users) === 1) {
         echo "<p style='color:green;'>✅ 角色正確，登入成功</p>";
         $_SESSION['email'] = $email;
         $_SESSION['role'] = $actualRole;
+        $_SESSION['name'] = $user['Name'];
 
         // Step 7: 導向
         switch ($actualRole) {
             case 'admin':
-                header('Location: admin_system.html');
+                header('Location: ./admin_system/admin_system.php');
                 break;
             case 'student':
-                header('Location: student_system.html');
+                header('Location: ./student_system/student_system.html');
                 break;
             case 'teacher':
-                header('Location: teacher_system.html');
+                header('Location: ./teacher_system/teacher_system.html');
                 break;
             case 'judge':
-                header('Location: judge_system.html');
+                header('Location: ./judge_system/judge_system.html');
                 break;
         }
         exit();
