@@ -82,28 +82,38 @@ foreach ($works as $w) {
                 <tr>
                     <th>隊伍名稱</th>
                     <th>參賽年份</th>
-                    <th>作品 ID</th>
+                    <!--<th>作品 ID</th>-->
                     <th>作品描述</th>
-                    <th>老師</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($teams as $row): ?>
                     <tr>
-                        <td><?= htmlspecialchars($row['TeamName']) ?></td>
-                        <td><?= htmlspecialchars($row['CompetitionYear']) ?></td>
-                        <td><?= htmlspecialchars($row['WorkID'] ?? '（無）') ?></td>
-                        <td><?= isset($row['WorkID']) && isset($workMap[$row['WorkID']]) 
-                                ? '✅ ' . htmlspecialchars($workMap[$row['WorkID']]) 
-                                : '❌ 尚未上傳' ?>
+                        <td>
+                            <a href = "./team_detail.php ? team_id = < ? = urlcode($row['TeamID']) ? >">
+                            <?= htmlspecialchars($row['TeamName']) ?>
                         </td>
-                        <td><?= htmlspecialchars($teacherMap[$row['TeacherID']] ?? '尚未指定') ?></td>
+
+                        <td><?= htmlspecialchars($row['CompetitionYear']) ?></td>
+                        <!--<td><?= htmlspecialchars($row['WorkID'] ?? '（無）') ?></td>-->
+                        <td>
+                        <?php if (!empty($row['WorkID']) && isset($workMap[$row['WorkID']])): ?>
+                            <a href="./work_detail.php?work_id=<?= urlencode($row['WorkID']) ?>">
+                            ✅ <?= htmlspecialchars($workMap[$row['WorkID']]) ?>
+                            </a>
+                        <?php else: ?>
+                            ❌ 尚未上傳
+                        <?php endif; ?>
+                        </td>
+                    
                     </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
 
+            <button onclick="history.back()" style="font-size:14px; padding:4px 10px;">← 返回</button>
     </body>
+
 
     <footer>
         <p>&copy; 2024 國立高雄大學 - 激發學生創意競賽管理系統</p>
