@@ -30,7 +30,7 @@ function fetch($table, $select = '*') {
 }
 
 // 抓 All-Teams 資料
-$teams = fetch('All-Teams', 'TeamName,CompetitionYear,WorkID,TeacherID');
+$teams = fetch('All-Teams', 'TeamName,CompetitionYear,WorkID,TeamID');
 
 // 抓 Participants 資料
 $participants = fetch('Participants', 'ParticipantID,Name');
@@ -49,7 +49,6 @@ $workMap = [];
 foreach ($works as $w) {
     $workMap[$w['WorkID']] = $w['Description'];
 }
-
 
 ?>
 
@@ -90,12 +89,14 @@ foreach ($works as $w) {
                 <?php foreach ($teams as $row): ?>
                     <tr>
                         <td>
-                            <a href = "./team_detail.php ? team_id = < ? = urlcode($row['TeamID']) ? >">
+                            <a href="./team_detail.php?team_id=<?= urlencode($row['TeamID']) ?>">
                             <?= htmlspecialchars($row['TeamName']) ?>
+                            </a>
                         </td>
 
                         <td><?= htmlspecialchars($row['CompetitionYear']) ?></td>
                         <!--<td><?= htmlspecialchars($row['WorkID'] ?? '（無）') ?></td>-->
+                        
                         <td>
                         <?php if (!empty($row['WorkID']) && isset($workMap[$row['WorkID']])): ?>
                             <a href="./work_detail.php?work_id=<?= urlencode($row['WorkID']) ?>">
