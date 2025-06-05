@@ -53,10 +53,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     curl_close($ch);
 
     if ($httpcode === 201) {
-        echo "<script>alert('✅ 公告已成功發佈'); window.location.href = 'main.php';</script>";
+        echo "<script>alert('✅ 公告已成功上傳，請到公告管理發佈公告'); window.location.href = 'main.php';</script>";
         exit();
     } else {
-        echo "<h3 style='color:red'>❌ 發佈失敗（HTTP $httpcode）</h3>";
+        echo "<h3 style='color:red'>❌ 上傳失敗（HTTP $httpcode）</h3>";
         echo "<pre>🔴 回傳內容：" . htmlspecialchars($res) . "</pre>";
     }
 }
