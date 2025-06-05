@@ -29,7 +29,6 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'admin') {
             <li><a href="award_summary.php">整合與產生得獎名單</a></li>
             <li><a href="./edit_profile/main.php">修改個人資料</a></li>
             <li><a href="../logout.php" style="color: red;">登出</a></li>
-            <li><a href="./test.php">测试</a></li>
         </ul>
     </main>
 
