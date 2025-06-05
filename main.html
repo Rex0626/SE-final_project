@@ -43,27 +43,8 @@
         <div class="news-header">
             <span>最新消息</span>
         </div>
-        <ul class="news-list">
-            <li class="news-item">
-                <a href="link1.html">【系所】</a>
-                <span class="news-date">2024-11-01</span>
-            </li>
-            <li class="news-item">
-                <a href="link2.html">【系所】</a>
-                <span class="news-date">2024-10-29</span>
-            </li>
-            <li class="news-item">
-                <a href="link3.html">【獲獎】</a>
-                <span class="news-date">2024-08-01</span>
-            </li>
-            <li class="news-item">
-                <a href="link4.html">【系所】</a>
-                <span class="news-date">2024-07-17</span>
-            </li>
-            <li class="news-item">
-                <a href="link5.html">【競賽】</a>
-                <span class="news-date">2024-05-08</span>
-            </li>
+        <ul class="news-list" id="dynamic-news-list">
+            <!-- 動態載入的公告將插入在這裡 -->
         </ul>
         <div class="more-link">
             <a href="more.html">更多消息...</a>
@@ -75,6 +56,26 @@
     </footer>
 
     <script src="main/scripts.js"></script> <!-- 引入 JavaScript 文件 -->
+
+    <script>
+        // 動態載入公告HTML片段
+        fetch('./admin_system/manage_announcement/homepage_announcements.html')
+            .then(response => {
+            if (!response.ok) {
+                throw new Error('載入公告失敗');
+            }
+            return response.text();
+            })
+            .then(html => {
+            document.getElementById('dynamic-news-list').innerHTML = html;
+            })
+            .catch(error => {
+            console.error(error);
+            document.getElementById('dynamic-news-list').innerHTML = '<li>目前無公告。</li>';
+            });
+    </script>
+
+
 
 </body>
 
