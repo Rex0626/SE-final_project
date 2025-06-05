@@ -101,13 +101,13 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'admin') {
             <a href="./manage_team/main.php" class="btn">隊伍管理</a>
         </div>
         <div class="card">
-            <a href="./manage_participant/main.php" class="btn">管理參賽者資料與權限</a>
+            <a href="./manage_participant/main.php" class="btn">參賽者資料管理</a>
         </div>
         <div class="card">
-            <a href="./manage_announcement/main.php" class="btn">發布與管理公告</a>
+            <a href="./manage_announcement/main.php" class="btn">公告發布與管理</a>
         </div>
         <div class="card">
-            <a href="./award_summary/main.php" class="btn">整合與產生得獎名單</a>
+            <a href="./award_summary/main.php" class="btn">整合得獎名單</a>
         </div>
         <div class="card">
             <a href="./edit_profile/main.php" class="btn">修改個人資料</a>
