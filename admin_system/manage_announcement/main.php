@@ -75,6 +75,7 @@ $totalPages = ceil($totalItems / $perPage);
         <table class="table table-bordered text-center">
             <thead class="thead-dark">
                 <tr>
+                    <th><input type="checkbox" onclick="toggleAll(this)"></th>
                     <th>標題</th>
                     <th>年份</th>
                     <th>上傳者 Email</th>
@@ -84,6 +85,7 @@ $totalPages = ceil($totalItems / $perPage);
             <tbody>
                 <?php foreach ($announcements as $a): ?>
                 <tr>
+                    <td><input type="checkbox" name="selected[]" value="<?= $a['AnnouncementID'] ?>"></td>
                     <td><?= htmlspecialchars($a['Title']) ?></td>
                     <td><?= htmlspecialchars($a['Year']) ?></td>
                     <td><?= htmlspecialchars($a['Admin_Email']) ?></td>
@@ -114,12 +116,28 @@ $totalPages = ceil($totalItems / $perPage);
         <div class="text-center mt-4">
             <a href="../admin_system.php" class="btn btn-secondary">⬅️ 返回主選單</a>
         </div>
+
+        <form method="POST" action="publish_selected_to_homepage.php">
+            <table class="table">
+                <!-- 表格內容如上加 checkbox -->
+            </table>
+            <div class="text-center mt-3">
+                <button type="submit" class="btn btn-primary" onclick="return confirm('確定要將所選公告發佈到首頁？')">📢 發佈到首頁</button>
+            </div>
+        </form>
+
     </div>
 
     <script>
-    function confirmDelete() {
-        return confirm('⚠️ 確定要刪除此公告嗎？此操作無法還原！');
-    }
+
+        function confirmDelete() {
+            return confirm('⚠️ 確定要刪除此公告嗎？此操作無法還原！');
+        }
+
+        function toggleAll(source) {
+            document.querySelectorAll('input[name="selected[]"]').forEach(cb => cb.checked = source.checked);
+        }
+
     </script>
 </body>
 </html>
