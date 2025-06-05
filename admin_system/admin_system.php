@@ -26,7 +26,7 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'admin') {
             <li><a href="./manage_team/main.php">隊伍管理</a></li>
             <li><a href="./manage_judge/main.php">管理評審資料與權限</a></li>
             <li><a href="./manage_announcement/main.php">發布與管理公告</a></li>
-            <li><a href="award_summary.php">整合與產生得獎名單</a></li>
+            <li><a href="./award_summary/main.php">整合與產生得獎名單</a></li>
             <li><a href="./edit_profile/main.php">修改個人資料</a></li>
             <li><a href="../logout.php" style="color: red;">登出</a></li>
         </ul>
