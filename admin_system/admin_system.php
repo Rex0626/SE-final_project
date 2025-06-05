@@ -13,6 +13,81 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'admin') {
     <title>系統管理員子系統 (SAS)</title>
     <link rel="stylesheet" href="./styles.css">
     <link rel="stylesheet" href="../styles.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        header {
+            padding: 40px 20px 30px;
+            text-align: center;
+            color: white;
+            font-weight: 900;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        header p {
+            font-size: 1.1rem;
+            margin-top: 10px;
+            font-weight: 500;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        main.container {
+            max-width: 400px;
+            margin: 0 auto;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 30px 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: center;
+        }
+        .card a.btn {
+            background-color: #007bff;
+            color: white;
+            padding: 18px 40px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+            text-decoration: none;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+        .card a.btn:hover {
+            background-color: #0056b3;
+        }
+        .logout-container {
+            max-width: 400px;
+            margin: 30px auto 50px;
+            text-align: center;
+        }
+        .btn-logout {
+            background-color: #dc3545;
+            color: white;
+            padding: 16px 50px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+            text-decoration: none;
+            display: inline-block;
+            width: 100%;
+            max-width: 320px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .btn-logout:hover {
+            background-color: #a71d2a;
+        }
+
+    </style>
+
 </head>
 
 <body>
@@ -21,16 +96,27 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'admin') {
         <p>歡迎，<?php echo htmlspecialchars($_SESSION['email']); ?>！</p>
     </header>
 
-    <main>
-        <ul>
-            <li><a href="./manage_team/main.php">隊伍管理</a></li>
-            <li><a href="./manage_judge/main.php">管理評審資料與權限</a></li>
-            <li><a href="./manage_announcement/main.php">發布與管理公告</a></li>
-            <li><a href="./award_summary/main.php">整合與產生得獎名單</a></li>
-            <li><a href="./edit_profile/main.php">修改個人資料</a></li>
-            <li><a href="../logout.php" style="color: red;">登出</a></li>
-        </ul>
+    <main class="container">
+        <div class="card">
+            <a href="./manage_team/main.php" class="btn">隊伍管理</a>
+        </div>
+        <div class="card">
+            <a href="./manage_judge/main.php" class="btn">管理評審資料與權限</a>
+        </div>
+        <div class="card">
+            <a href="./manage_announcement/main.php" class="btn">發布與管理公告</a>
+        </div>
+        <div class="card">
+            <a href="./award_summary/main.php" class="btn">整合與產生得獎名單</a>
+        </div>
+        <div class="card">
+            <a href="./edit_profile/main.php" class="btn">修改個人資料</a>
+        </div>
     </main>
+
+    <div class="logout-container">
+        <a href="../logout.php" class="btn-logout">登出</a>
+    </div>
 
     <footer>
         <p>&copy; 2024 國立高雄大學 - 激發學生創意競賽管理系統</p>
