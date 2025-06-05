@@ -72,31 +72,36 @@ $totalPages = ceil($totalItems / $perPage);
             <p class="text-center">📄 第 <?= $page ?> 頁 / 共 <?= $totalPages ?> 頁</p>
         <?php endif; ?>
 
-        <table class="table table-bordered text-center">
-            <thead class="thead-dark">
-                <tr>
-                    <th><input type="checkbox" onclick="toggleAll(this)"></th>
-                    <th>標題</th>
-                    <th>年份</th>
-                    <th>上傳者 Email</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($announcements as $a): ?>
-                <tr>
-                    <td><input type="checkbox" name="selected[]" value="<?= $a['AnnouncementID'] ?>"></td>
-                    <td><?= htmlspecialchars($a['Title']) ?></td>
-                    <td><?= htmlspecialchars($a['Year']) ?></td>
-                    <td><?= htmlspecialchars($a['Admin_Email']) ?></td>
-                    <td>
-                        <a href="./edit.php?id=<?= $a['AnnouncementID'] ?>" class="btn btn-info btn-sm">編輯</a>
-                        <a href="./delete.php?id=<?= $a['AnnouncementID'] ?>" class="btn btn-danger btn-sm" onclick="return confirmDelete();">刪除</a>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+        <form method="POST" action="publish_selected_to_homepage.php">
+            <table class="table table-bordered text-center">
+                <thead class="thead-dark">
+                    <tr>
+                        <th><input type="checkbox" onclick="toggleAll(this)"></th>
+                        <th>標題</th>
+                        <th>年份</th>
+                        <th>上傳者 Email</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($announcements as $a): ?>
+                    <tr>
+                        <td><input type="checkbox" name="selected[]" value="<?= $a['AnnouncementID'] ?>"></td>
+                        <td><?= htmlspecialchars($a['Title']) ?></td>
+                        <td><?= htmlspecialchars($a['Year']) ?></td>
+                        <td><?= htmlspecialchars($a['Admin_Email']) ?></td>
+                        <td>
+                            <a href="./edit.php?id=<?= $a['AnnouncementID'] ?>" class="btn btn-info btn-sm">編輯</a>
+                            <a href="./delete.php?id=<?= $a['AnnouncementID'] ?>" class="btn btn-danger btn-sm" onclick="return confirmDelete();">刪除</a>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+            <div class="text-center mt-3">
+                <button type="submit" class="btn btn-primary" onclick="return confirm('確定要將所選公告發佈到首頁？')">📢 發佈到首頁</button>
+            </div>
+        </form>
 
         <div class="text-center mt-4">
             <a href="./add.php" class="btn btn-success">➕ 新增公告</a>
@@ -116,15 +121,6 @@ $totalPages = ceil($totalItems / $perPage);
         <div class="text-center mt-4">
             <a href="../admin_system.php" class="btn btn-secondary">⬅️ 返回主選單</a>
         </div>
-
-        <form method="POST" action="publish_selected_to_homepage.php">
-            <table class="table">
-                <!-- 表格內容如上加 checkbox -->
-            </table>
-            <div class="text-center mt-3">
-                <button type="submit" class="btn btn-primary" onclick="return confirm('確定要將所選公告發佈到首頁？')">📢 發佈到首頁</button>
-            </div>
-        </form>
 
     </div>
 
