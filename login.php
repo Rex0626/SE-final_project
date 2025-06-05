@@ -63,7 +63,7 @@ if (is_array($users) && count($users) === 1) {
     echo "<p>📦 資料庫帳號角色：<strong>$rawRole</strong></p>";
 
     // Step 4: 密碼驗證
-    if (password_verify($password, $hashedPassword)) {
+    if ($password === $hashedPassword) {
         echo "<p style='color:green;'>✅ 密碼正確</p>";
 
         // Step 5: 角色比對
