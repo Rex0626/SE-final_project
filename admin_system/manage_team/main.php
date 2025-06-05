@@ -112,7 +112,7 @@ foreach ($works as $w) {
             </tbody>
         </table>
 
-            <button onclick="history.back()" style="font-size:14px; padding:4px 10px;">← 返回</button>
+            <button onclick="location.href='../admin_system.php'" style="font-size:14px; padding:4px 10px;">← 返回</button>
     </body>
 
 
