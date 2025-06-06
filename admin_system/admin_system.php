@@ -110,7 +110,7 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'admin') {
             <a href="./manage_competition/main.php" class="btn">比賽資料管理</a>
         </div>
         <div class="card">
-            <a href="./award_summary/main.php" class="btn">整合得獎名單</a>
+            <a href="./award_summary/select_competition.php" class="btn">整合得獎名單</a>
         </div>
         <div class="card">
             <a href="./edit_profile/main.php" class="btn">修改個人資料</a>
