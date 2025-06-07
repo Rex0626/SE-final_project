@@ -62,6 +62,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    if (strtotime($start_date) >= strtotime($end_date)) {
+        echo "<script>alert('❌ 起始日期不能晚於或等於結束日期'); window.history.back();</script>";
+        exit();
+    }
+
     // 更新資料表
     if (!$error) {
         $data = [
@@ -163,7 +168,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             <?php endif; ?>
 
-            <form action="edit.php?id=<?= urlencode($id) ?>" method="POST" enctype="multipart/form-data">
+            <form action="edit.php?id=<?= urlencode($id) ?>" method="POST" enctype="multipart/form-data" onsubmit="return validateTime()">
                 <div class="form-group">
                     <label for="title">比賽標題</label>
                     <input type="text" class="form-control" name="title" value="<?= htmlspecialchars($competition['Title']) ?>" required>
@@ -191,12 +196,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="form-group">
                     <label for="start_date">起始日期</label>
-                    <input type="date" class="form-control" name="start_date" value="<?= $competition['Start_date'] ?>" required>
+                    <input type="date" id="start_date" class="form-control" name="start_date" value="<?= $competition['Start_date'] ?>" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="end_date">結束日期</label>
-                    <input type="date" class="form-control" name="end_date" value="<?= $competition['End_date'] ?>" required>
+                    <input type="date" id="end_date" class="form-control" name="end_date" value="<?= $competition['End_date'] ?>" required>
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-block">更新比賽</button>
@@ -206,5 +211,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
         </div>
     </body>
+
+    <script>
+        function validateTime() {
+            const start = new Date(document.getElementById('start_date').value);
+            const end = new Date(document.getElementById('end_date').value);
+
+            if (start >= end) {
+                alert("❌ 開始時間不能晚於或等於結束時間，請重新輸入！");
+                return false;
+            }
+            return true;
+        }
+    </script>
 
 </html>
