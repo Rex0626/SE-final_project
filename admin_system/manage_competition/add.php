@@ -52,6 +52,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             echo "<pre>Debug: $uploadResponse</pre>";
             $poster_url = '';
         }
+        if (strtotime($start_date) >= strtotime($end_date)) {
+            echo "<script>alert('❌ 開始日期不能晚於或等於結束日期'); window.history.back();</script>";
+            exit();
+        }
     }else {
     $poster_url = ''; // 沒有上傳圖片時，海報欄位留空
     }
@@ -127,7 +131,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <body>
         <div class="container">
             <h2>新增比賽資訊</h2>
-            <form action="add.php" method="POST" enctype="multipart/form-data">
+            <form action="add.php" method="POST" enctype="multipart/form-data" onsubmit="return validateTime()">
                 <div class="form-group">
                     <label for="title">比賽標題</label>
                     <input type="text" class="form-control" name="title" required>
@@ -142,11 +146,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 </div>
                 <div class="form-group">
                     <label for="start_date">起始日期</label>
-                    <input type="date" class="form-control" name="start_date" required>
+                    <input type="date" id="start_date" class="form-control" name="start_date" required>
                 </div>
                 <div class="form-group">
                     <label for="end_date">結束日期</label>
-                    <input type="date" class="form-control" name="end_date" required>
+                    <input type="date" id="end_date" class="form-control" name="end_date" required>
                 </div>
                 <button type="submit" class="btn btn-primary btn-block">➕ 新增比賽</button>
             </form>
@@ -155,5 +159,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </div>
         </div>
     </body>
+
+    <script>
+        function validateTime() {
+            const start = new Date(document.getElementById('start_date').value);
+            const end = new Date(document.getElementById('end_date').value);
+
+            if (start >= end) {
+                alert("❌ 開始時間不能晚於或等於結束時間，請重新輸入！");
+                return false; // 阻止表單送出
+            }
+            return true;
+        }
+    </script>
+
 
 </html>
