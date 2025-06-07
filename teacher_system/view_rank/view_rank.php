@@ -1,3 +1,23 @@
+<script>
+// 閒置時間上限：10 分鐘（單位：毫秒）
+const timeoutDuration = 10 * 1000;
+
+let timeoutHandle = setTimeout(showIdleWarning, timeoutDuration);
+
+// 重設計時器函式
+function resetTimer() {
+    clearTimeout(timeoutHandle);
+    timeoutHandle = setTimeout(showIdleWarning, timeoutDuration);
+}
+
+// 顯示提示視窗並導向登出
+function showIdleWarning() {
+    const userConfirmed = confirm("您已閒置超過 10 分鐘，系統即將登出。請按「確定」繼續。");
+    if (userConfirmed) {
+        window.location.href = "../../main.html?timeout=1";
+    }
+}
+
 <?php
 session_start();
 require_once '../db_connect.php';
