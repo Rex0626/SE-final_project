@@ -31,33 +31,35 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'admin') {
             text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
         main.container {
-            max-width: 400px;
+            max-width: 1140px;  /* Bootstrap container-lg 寬度 */
             margin: 0 auto;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-            padding: 20px;
+            padding: 30px 15px;
         }
         .card {
             background: white;
             border-radius: 14px;
             padding: 30px 20px;
+            min-height: 150px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.15);
             display: flex;
             justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%; /* ✅ 撐滿 col-md-4 */
         }
+
         .card a.btn {
             background-color: #007bff;
             color: white;
-            padding: 18px 40px;
-            font-size: 1.2rem;
+            padding: 16px;
+            font-size: 1.1rem;
             font-weight: 700;
             border-radius: 12px;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-            text-decoration: none;
             text-align: center;
-            transition: background-color 0.3s ease;
+            width: 100%;           /* ✅ 撐滿卡片寬度 */
+            white-space: nowrap;   /* ✅ 不換行 */
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .card a.btn:hover {
             background-color: #0056b3;
@@ -97,23 +99,42 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'admin') {
     </header>
 
     <main class="container">
-        <div class="card">
-            <a href="./manage_team/main.php" class="btn">隊伍與作品管理</a>
-        </div>
-        <div class="card">
-            <a href="./manage_participant/main.php" class="btn">參賽者資料管理</a>
-        </div>
-        <div class="card">
-            <a href="./manage_announcement/main.php" class="btn">公告發布與管理</a>
-        </div>
-        <div class="card">
-            <a href="./manage_competition/main.php" class="btn">比賽資料管理</a>
-        </div>
-        <div class="card">
-            <a href="./award_summary/select_competition.php" class="btn">整合得獎名單</a>
-        </div>
-        <div class="card">
-            <a href="./edit_profile/main.php" class="btn">修改個人資料</a>
+        <div class="row justify-content-center">
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <a href="./manage_team/main.php" class="btn">隊伍與作品管理</a>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <a href="./manage_participant/main.php" class="btn">參賽者資料管理</a>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <a href="./manage_announcement/main.php" class="btn">公告發布與管理</a>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <a href="./manage_competition/main.php" class="btn">比賽資料管理</a>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <a href="./award_summary/select_competition.php" class="btn">整合得獎名單</a>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <a href="./edit_profile/main.php" class="btn">修改個人資料</a>
+                </div>
+            </div>
         </div>
     </main>
 
