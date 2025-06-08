@@ -6,6 +6,20 @@
   <title>報名參賽</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <style>
+    a.back-btn {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      background: rgba(0,102,204,0.8);
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background .2s;
+    }
+    a.back-btn:hover {
+      background: rgba(0,102,204,1);
+    }
     body {
       background-color: #f4f4f9;
       padding-top: 50px;
@@ -20,6 +34,7 @@
   </style>
 </head>
 <body>
+  <a class="back-btn" href="student_system.html">← 回學生系統</a>
   <div class="container">
     <h2 class="text-center mb-4">報名參賽表單</h2>
     <form id="team-form" method="POST" action="register_team.php">

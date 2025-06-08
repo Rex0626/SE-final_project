@@ -17,21 +17,36 @@
             padding: 10px 20px;
             font-size: 1rem;
         }
+        a.back-btn {
+          position: absolute;
+          top: 1rem; right: 1rem;
+          background: #fff;
+          color: rgba(0,102,204,0.8);
+          padding: 0.5rem 1rem;
+          border-radius: 4px;
+          text-decoration: none;
+          font-weight: bold;
+          transition: background .2s;
+        }
+        a.back-btn:hover {
+          background: #fff;
+        }
     </style>
 </head>
 <body>
   <header>
     <h1>高雄大學激發學生創意競賽管理系統</h1>
     <!-- 大按鈕：返回首頁 -->
-    <a href="../main.html" class="btn-home">返回首頁</a>
+    <a href="../main.html" class="back-btn">返回首頁</a>
   </header>
 
     <div class="button-group">
         <button type="button" onclick="check_register_team()">報名參賽</button>
-        <button type="button">功能二（未實作）</button>
+        <button type="button" onclick="view_announcements()">查看得獎公告</button>
         <button type="button" onclick="checkAndRedirect()">修改隊伍成員</button>
-        <button type="button">功能四（未實作）</button>
-        <button type="button">功能五（未實作）</button>
+        <button type="button" onclick="upload_submission()">上傳作品</button>
+        <button type="button" onclick="list_submissions()">查詢隊伍成績</button>
+        <button type="button" onclick="stu_data()">修改個人資料</button>
     </div>
 
     <footer>
@@ -56,6 +71,18 @@
     }
     function check_register_team() {
         window.location.href = 'check_register_team.php';
+    }
+    function list_submissions() {
+        window.location.href = 'eval_list.php';
+    }
+    function upload_submission() {
+        window.location.href = 'upload_submission.html';
+    }
+    function view_announcements() {
+        window.location.href = 'view_announcements.html';
+    }
+    function stu_data() {
+        window.location.href = 'stu_data.php';
     }
     </script>
 </body>
