@@ -1,38 +1,52 @@
 <?php
-// my_teams.php
+// view_results.php
 session_start();
 date_default_timezone_set('Asia/Taipei');
 require_once 'config.php';
 header('Content-Type: application/json; charset=utf-8');
 
-// **改用 team_id** （报名后存入的）：
-if (! isset($_SESSION['team_id'])) {
-    http_response_code(401);
-    echo json_encode(array(
-        'success' => false,
-        'error'   => '請先註冊隊伍'
-    ), JSON_UNESCAPED_UNICODE);
-    exit;
+// 取 team_id
+$teamId = $_GET['team_id'] ?? $_SESSION['team_id'] ?? null;
+if (!$teamId) {
+  http_response_code(400);
+  echo json_encode(['success'=>false,'error'=>'必須提供 team_id'], JSON_UNESCAPED_UNICODE);
+  exit;
 }
 
-$teamId = $_SESSION['team_id'];
+// 1) 找 WorkID
+$rT = callSupabase("All-Teams?TeamID=eq.{$teamId}&select=WorkID", 'GET');
+if ($rT['status']!==200 || empty($rT['body'][0]['WorkID'])) {
+  http_response_code(404);
+  echo json_encode(['success'=>false,'error'=>'找不到作品'], JSON_UNESCAPED_UNICODE);
+  exit;
+}
+$workId = $rT['body'][0]['WorkID'];
 
-// 直接从 All-Teams 拿这支队伍的名称
-$r = callSupabase(
-    "All-Teams?TeamID=eq.{$teamId}&select=TeamID,TeamName",
-    'GET'
+// 2) 取作品資料
+$rW = callSupabase(
+  "Works?WorkID=eq.{$workId}&select=Description,Poster,VideoLink,CodeLink,created_at",
+  'GET'
 );
-if ($r['status'] !== 200) {
-    http_response_code(500);
-    echo json_encode(array(
-        'success' => false,
-        'error'   => '無法讀取隊伍'
-    ), JSON_UNESCAPED_UNICODE);
-    exit;
-}
+$work = $rW['body'][0] ?? [];
 
-echo json_encode(array(
-    'success' => true,
-    // 返回一个数组，前端下拉列表能遍历
-    'teams'   => $r['body']
-), JSON_UNESCAPED_UNICODE);
+// 3) 取所有評分
+$rE = callSupabase(
+  "Evaluations?WorkID=eq.{$workId}&select=Score,Comments,created_at&order=created_at.asc",
+  'GET'
+);
+$evals = is_array($rE['body']) ? $rE['body'] : [];
+
+// 4) 取最新公告
+$rN = callSupabase(
+  "Announcement?select=Title,Content,Year&order=created_at.desc&limit=5",
+  'GET'
+);
+$anns = is_array($rN['body']) ? $rN['body'] : [];
+
+// 回傳
+echo json_encode([
+  'success'       => true,
+  'work'          => $work,
+  'evaluations'   => $evals,
+  'announcements' => $anns
+], JSON_UNESCAPED_UNICODE);
