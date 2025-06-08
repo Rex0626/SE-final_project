@@ -4,8 +4,8 @@ date_default_timezone_set('Asia/Taipei');
 session_start();
 
 // ← 填上你的 Supabase 專案參數
-$SUPABASE_URL = 'https://fdkhwqwtjentmuzwhokc.supabase.co';
-$SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZka2h3cXd0amVudG11endob2tjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1MTE5NjksImV4cCI6MjA2NDA4Nzk2OX0.ZHijq5e612BceVP5fHLXSBaZF6vNXpOq5Hw5dzz7J8M'; // 建議使用 Server Role
+$SUPABASE_URL = 'https://＜YOUR_PROJECT＞.supabase.co';
+$SUPABASE_KEY = '＜YOUR_SERVICE_ROLE_KEY＞';
 
 function callSupabase(string $endpoint, string $method='GET', array $data=null): array {
     global $SUPABASE_URL, $SUPABASE_KEY;
