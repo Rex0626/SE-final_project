@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title>得獎公告一覽</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 2rem auto; }
+    h1 { text-align: center; }
+    .announcement { margin-bottom: 2rem; }
+    .announcement h2 { margin-bottom: 0.2rem; }
+    .announcement p { margin: 0.5rem 0; }
+  </style>
+</head>
+<body>
+  <h1>得獎公告一覽</h1>
+  <div id="list">
+    <p>載入中⋯⋯</p>
+  </div>
+
+  <script>
+    fetch('view_announcements.php')
+      .then(r => r.json())
+      .then(data => {
+        const container = document.getElementById('list');
+        if (!data.success) {
+          container.innerHTML = `<p style="color:red">錯誤：${data.error}</p>`;
+          return;
+        }
+        if (!data.announcements.length) {
+          container.innerHTML = '<p>目前沒有任何公告。</p>';
+          return;
+        }
+
+        let html = '';
+        data.announcements.forEach(item => {
+          html += `<div class="announcement">
+            <h2>${item.Title} （${item.Year}）</h2>
+            <p>${item.Content}</p>
+            <small>發布時間：${item.created_at}</small>
+          </div>`;
+        });
+
+        container.innerHTML = html;
+      })
+      .catch(err => {
+        document.getElementById('list').innerHTML =
+          `<p style="color:red">載入失敗：${err}</p>`;
+      });
+  </script>
+</body>
+</html>

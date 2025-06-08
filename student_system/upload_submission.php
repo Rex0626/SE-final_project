@@ -1,129 +1,77 @@
 <?php
 // upload_submission.php
-date_default_timezone_set('Asia/Taipei');
 session_start();
+date_default_timezone_set('Asia/Taipei');
+require_once 'config.php';
+header('Content-Type: application/json; charset=utf-8');
 
-// ← 填上你的 Supabase 專案參數
-$SUPABASE_URL = 'https://fdkhwqwtjentmuzwhokc.supabase.co';
-$SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZka2h3cXd0amVudG11endob2tjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1MTE5NjksImV4cCI6MjA2NDA4Nzk2OX0.ZHijq5e612BceVP5fHLXSBaZF6vNXpOq5Hw5dzz7J8M'; // 建議使用 Server Role
-
-function callSupabase(string $endpoint, string $method='GET', array $data=null): array {
-    global $SUPABASE_URL, $SUPABASE_KEY;
-    $url = "{$SUPABASE_URL}/rest/v1/{$endpoint}";
-    $ch  = curl_init($url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-      "apikey: {$SUPABASE_KEY}",
-      "Authorization: Bearer {$SUPABASE_KEY}",
-      "Content-Type: application/json",
-      "Prefer: return=representation"
-    ]);
-    if ($data !== null) {
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-    }
-    $resp = curl_exec($ch);
-    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-    return ['status'=>$code,'body'=>json_decode($resp,true)];
-}
-
-function generateUUID(): string {
-    return sprintf(
-        '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-        mt_rand(0,0xffff), mt_rand(0,0xffff),
-        mt_rand(0,0xffff),
-        mt_rand(0,0x0fff)|0x4000,
-        mt_rand(0,0x3fff)|0x8000,
-        mt_rand(0,0xffff), mt_rand(0,0xffff), mt_rand(0,0xffff)
-    );
-}
-
-// 如果是 POST，執行上傳流程
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    header('Content-Type: application/json; charset=utf-8');
-
-    if (!isset($_SESSION['team_id'])) {
-        http_response_code(401);
-        echo json_encode(['success'=>false,'error'=>'請先登入'], JSON_UNESCAPED_UNICODE);
-        exit;
-    }
-
-    // 讀欄位
-    $teamId = $_SESSION['team_id'];
-    $desc   = trim($_POST['work_description'] ?? '');
-    $poster = trim($_POST['poster_url']       ?? '');
-    $video  = trim($_POST['video_url']        ?? '');
-    $code   = trim($_POST['code_url']         ?? '');
-
-    if ($desc === '') {
-        http_response_code(400);
-        echo json_encode(['success'=>false,'error'=>'請填作品說明'], JSON_UNESCAPED_UNICODE);
-        exit;
-    }
-
-    // 1) 插入 Works
-    $workId = generateUUID();
-    $ts     = date('c');
-    $pl1    = [[
-        'WorkID'      => $workId,
-        'Description' => $desc,
-        'created_at'  => $ts,
-        'updated_at'  => $ts
-    ]];
-    $r1 = callSupabase('Works','POST',$pl1);
-    if ($r1['status'] !== 201) {
-        http_response_code(500);
-        echo json_encode(['success'=>false,'step'=>'insert works','status'=>$r1['status']], JSON_UNESCAPED_UNICODE);
-        exit;
-    }
-
-    // 2) 更新檔案連結
-    $upd = [];
-    if ($poster!=='') $upd['Poster']    = $poster;
-    if ($video!=='')  $upd['VideoLink'] = $video;
-    if ($code!=='')   $upd['CodeLink']  = $code;
-    if ($upd) {
-        $r2 = callSupabase("Works?WorkID=eq.{$workId}", 'PATCH', [$upd]);
-        if ($r2['status'] !== 204) {
-            http_response_code(500);
-            echo json_encode(['success'=>false,'step'=>'update works','status'=>$r2['status']], JSON_UNESCAPED_UNICODE);
-            exit;
-        }
-    }
-
-    // 3) 更新 All-Teams 的 WorkID
-    $r3 = callSupabase('%22All-Teams%22?TeamID=eq.'.$teamId, 'PATCH', [['WorkID'=>$workId]]);
-    if ($r3['status'] !== 204) {
-        http_response_code(500);
-        echo json_encode(['success'=>false,'step'=>'update team','status'=>$r3['status']], JSON_UNESCAPED_UNICODE);
-        exit;
-    }
-
-    echo json_encode(['success'=>true,'work_id'=>$workId], JSON_UNESCAPED_UNICODE);
+// 只接受已登入團隊的上傳
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['team_id'])) {
+    http_response_code(400);
+    echo json_encode(['success'=>false,'error'=>'必須 POST 且已註冊'], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-// 以下為 GET 時顯示表單
-?>
-<!DOCTYPE html>
-<html lang="zh-Hant">
-<head>
-  <meta charset="utf-8">
-  <title>作品上傳</title>
-</head>
-<body>
-  <h1>作品上傳</h1>
-  <form action="upload_submission.php" method="post">
-    <p>
-      <label>作品說明：<br>
-        <input name="work_description" required style="width:300px;">
-      </label>
-    </p>
-    <p><label>Poster URL：<input name="poster_url" style="width:300px;"></label></p>
-    <p><label>Video URL：<input name="video_url" style="width:300px;"></label></p>
-    <p><label>Code URL：<input name="code_url" style="width:300px;"></label></p>
-    <p><button type="submit">上傳作品</button></p>
-  </form>
-</body>
-</html>
+$teamId = $_SESSION['team_id'];
+$desc   = trim($_POST['work_description'] ?? '');
+$poster = trim($_POST['poster_url']       ?? '');
+$video  = trim($_POST['video_url']        ?? '');
+$code   = trim($_POST['code_url']         ?? '');
+
+if ($desc === '') {
+    http_response_code(400);
+    echo json_encode(['success'=>false,'error'=>'請填作品說明'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+// 1) 新增 Works
+$workId = generateUUID();
+$ts     = date('c');
+$pl1    = [[
+    'WorkID'      => $workId,
+    'Description' => $desc,
+    'created_at'  => $ts,
+    'updated_at'  => $ts
+]];
+$r1 = callSupabase('Works','POST',$pl1);
+if ($r1['status'] !== 201) {
+    http_response_code(500);
+    echo json_encode(['success'=>false,'step'=>'insert works','status'=>$r1['status']],JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+// 2) 更新檔案連結
+// 2) 更新檔案連結
+$upd = [];
+if ($poster!=='') $upd['Poster']    = $poster;
+if ($video!=='')  $upd['VideoLink'] = $video;
+if ($code!=='')   $upd['CodeLink']  = $code;
+if ($upd) {
+    $r2 = callSupabase("Works?WorkID=eq.{$workId}", 'PATCH', [$upd]);
+    if (!in_array($r2['status'], [200, 204], true)) {
+        http_response_code(500);
+        echo json_encode([
+          'success' => false,
+          'step'    => 'update works links',
+          'status'  => $r2['status'],
+          'detail'  => $r2['body'] ?? null
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+}
+
+// 3) 回填 All-Teams
+$r3 = callSupabase('All-Teams?TeamID=eq.'.$teamId, 'PATCH', [['WorkID'=>$workId]]);
+// 接受 200 或 204 都算成功
+if (! in_array($r3['status'], [200, 204], true)) {
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'step'    => 'update team',
+        'status'  => $r3['status'],
+        'detail'  => $r3['body'] ?? null
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+echo json_encode(['success'=>true,'work_id'=>$workId],JSON_UNESCAPED_UNICODE);
