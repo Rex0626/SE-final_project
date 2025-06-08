@@ -1,101 +1,147 @@
 <?php
 // sign_up.php
-session_start();
-require_once 'config.php';  // 定義 supabaseRequest() 與 generateUUID()
-
-// 回應 JSON
+date_default_timezone_set('Asia/Taipei');
 header('Content-Type: application/json; charset=utf-8');
 
-// 只接受 POST
+// ← 在這裡填上你的專案 URL & Key ←
+$SUPABASE_URL = 'https://fdkhwqwtjentmuzwhokc.supabase.co';
+$SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZka2h3cXd0amVudG11endob2tjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1MTE5NjksImV4cCI6MjA2NDA4Nzk2OX0.ZHijq5e612BceVP5fHLXSBaZF6vNXpOq5Hw5dzz7J8M'; // 建議使用 Server Role
+
+/**
+ * 執行 Supabase REST API 請求
+ *
+ * @param string      $endpoint  table 或 query (e.g. 'Participants', '%22All-Teams%22')
+ * @param string      $method    HTTP 方法: GET, POST, PATCH, DELETE
+ * @param array|null  $data      POST/PATCH 時的 payload
+ * @return array                 ['status'=>HTTP code, 'body'=>decoded JSON]
+ */
+function callSupabase(string $endpoint, string $method = 'GET', array $data = null): array {
+    global $SUPABASE_URL, $SUPABASE_KEY;
+    $url = "{$SUPABASE_URL}/rest/v1/{$endpoint}";
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        "apikey: {$SUPABASE_KEY}",
+        "Authorization: Bearer {$SUPABASE_KEY}",
+        "Content-Type: application/json",
+        "Prefer: return=representation"
+    ]);
+    if ($data !== null) {
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    }
+    $resp = curl_exec($ch);
+    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    return ['status'=>$code, 'body'=> json_decode($resp, true)];
+}
+
+/**
+ * 產生 UUID v4
+ */
+function generateUUID(): string {
+    return sprintf(
+        '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+        mt_rand(0, 0xffff), mt_rand(0, 0xffff),
+        mt_rand(0, 0xffff),
+        mt_rand(0, 0x0fff) | 0x4000,
+        mt_rand(0, 0x3fff) | 0x8000,
+        mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+    );
+}
+
+// 僅接受 POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
-    echo json_encode([
-        'success' => false,
-        'error'   => '只接受 POST 請求',
-    ], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['success'=>false,'error'=>'只接受 POST 請求'], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-// 1. 先註冊每個參賽者 (Participants)
-$membersEmails  = $_POST['emails'] ?? [];  // array of email
+// 讀取前端資料
+$teamName       = trim($_POST['teamName']       ?? '');
+$competitionId  = trim($_POST['competition_id'] ?? '');
+$emails         = $_POST['emails']             ?? [];
+
+if (empty($teamName) || empty($competitionId) || !is_array($emails) || count($emails) === 0) {
+    http_response_code(400);
+    echo json_encode(['success'=>false,'error'=>'請提供 teamName, competition_id 及至少一個 email'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+// 1) 插入 Participants
 $participantIDs = [];
-
-foreach ($membersEmails as $email) {
+foreach ($emails as $email) {
     $pid = generateUUID();
-    $payload = [[
+    $pl = [[
         'ParticipantID' => $pid,
-        'Name'          => trim($_POST['name_' . $email]  ?? ''),
-        'Phone'         => intval($_POST['phone_' . $email] ?? 0),
+        'Name'          => trim($_POST["name_{$email}"]  ?? ''),
+        'Phone'         => intval($_POST["phone_{$email}"] ?? 0),
         'Email'         => $email,
-        'Password'      => password_hash($_POST['pwd_' . $email] ?? '', PASSWORD_BCRYPT),
+        'Password'      => password_hash($_POST["pwd_{$email}"] ?? '', PASSWORD_BCRYPT),
         'Role'          => 'Student',
+        'created_at'    => date('c')
     ]];
-
-    $resP = supabaseRequest('Participants', 'POST', $payload);
-    if ($resP['status'] !== 201) {
+    $res = callSupabase('Participants', 'POST', $pl);
+    if ($res['status'] !== 201) {
         http_response_code(500);
         echo json_encode([
-            'success' => false,
-            'error'   => '參賽者註冊失敗',
-            'detail'  => $resP['body'],
+            'success'=>false,
+            'step'   =>'insert participants',
+            'status' =>$res['status'],
+            'detail' =>$res['body']
         ], JSON_UNESCAPED_UNICODE);
         exit;
     }
-
     $participantIDs[] = $pid;
 }
 
-// 2. 建立隊伍 (All-Teams) — 注意表名需 URL-encode 雙引號
-$teamId        = generateUUID();
-$competitionId = $_POST['competition_id'] ?? '';
-
-$teamsEndpoint = '%22All-Teams%22'; // 等同於 "All-Teams"
-$payloadTeam   = [[
+// 2) 插入 All-Teams (表名含破折號需用 URL-encoded 的雙引號)
+$teamId = generateUUID();
+$teamsEndpoint = '%22All-Teams%22';
+$teamPayload = [[
     'TeamID'        => $teamId,
-    'TeamName'      => trim($_POST['teamName']     ?? ''),
+    'TeamName'      => $teamName,
     'CompetitionId' => $competitionId,
-    // WorkID 留空，上傳作品時再更新
+    'created_at'    => date('c'),
+    // 'WorkID'    => null  // 作品上傳時再更新
 ]];
-
-$resT = supabaseRequest($teamsEndpoint, 'POST', $payloadTeam);
-if ($resT['status'] !== 201) {
+$res = callSupabase($teamsEndpoint, 'POST', $teamPayload);
+if ($res['status'] !== 201) {
     http_response_code(500);
     echo json_encode([
-        'success' => false,
-        'error'   => '隊伍建立失敗',
-        'status'  => $resT['status'],
-        'detail'  => $resT['body'],
+        'success'=>false,
+        'step'   =>'insert team',
+        'status' =>$res['status'],
+        'detail' =>$res['body']
     ], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-// 3. 批次寫入隊員對應 (Team-Members)
-$tmEndpoint = '%22Team-Members%22'; // 等同於 "Team-Members"
-$tmPayload  = [];
-
+// 3) 批次插入 Team-Members
+$tmEndpoint = '%22Team-Members%22';
+$tmPayload = [];
 foreach ($participantIDs as $pid) {
     $tmPayload[] = [
         'TeamID'        => $teamId,
         'ParticipantID' => $pid,
+        'created_at'    => date('c'),
     ];
 }
-
-$resTM = supabaseRequest($tmEndpoint, 'POST', $tmPayload);
-if ($resTM['status'] !== 201) {
+$res = callSupabase($tmEndpoint, 'POST', $tmPayload);
+if ($res['status'] !== 201) {
     http_response_code(500);
     echo json_encode([
-        'success' => false,
-        'error'   => 'Team-Members 寫入失敗',
-        'status'  => $resTM['status'],
-        'detail'  => $resTM['body'],
+        'success'=>false,
+        'step'   =>'insert team-members',
+        'status' =>$res['status'],
+        'detail' =>$res['body']
     ], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-// 4. 註冊成功，存 Session 並回傳
-$_SESSION['team_id'] = $teamId;
-
+// 成功
 echo json_encode([
-    'success' => true,
-    'team_id' => $teamId,
+    'success'        => true,
+    'team_id'        => $teamId,
+    'participant_ids'=> $participantIDs
 ], JSON_UNESCAPED_UNICODE);
