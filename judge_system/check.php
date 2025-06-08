@@ -98,7 +98,7 @@ if (is_array($data) && count($data) === 1) {
         <div class="info"><strong>姓名：</strong> <?php echo htmlspecialchars($name); ?></div>
         <div class="info"><strong>電話：</strong> <?php echo htmlspecialchars($phone); ?></div>
         <div class="info"><strong>電子郵件：</strong> <?php echo htmlspecialchars($email); ?></div>
-        <div class="info"><strong>角色：</strong> <?php echo htmlspecialchars($role); ?></div>
+        <div class="info"><strong>職稱：</strong> <?php echo htmlspecialchars($role); ?></div>
         <div class="info"><strong>密碼：</strong> <?php echo htmlspecialchars($password); ?></div>
     <?php endif; ?>
 
