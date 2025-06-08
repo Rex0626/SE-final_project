@@ -2,92 +2,110 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>作品上傳｜激發學生創意競賽</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <style>
-    /* Reset & Base */
+    /* --- Reset & Base --- */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background: #f0f4f8;
+      background: linear-gradient(135deg, #e0f7fa, #80deea);
       color: #333;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
     }
-    /* Card Container */
+    a.back-btn {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      background: rgba(0,102,204,0.8);
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background .2s;
+    }
+    a.back-btn:hover {
+      background: rgba(0,102,204,1);
+    }
+    /* --- Card Container --- */
     .card {
       background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
       width: 100%;
-      max-width: 500px;
+      max-width: 480px;
       padding: 2rem;
-      animation: fadeIn 0.5s ease-out;
+      position: relative;
+      animation: fadeIn 0.6s ease-out;
     }
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(30px); }
       to   { opacity: 1; transform: translateY(0); }
     }
     h1 {
       text-align: center;
-      margin-bottom: 1.5rem;
       color: #004aad;
+      margin-bottom: 1.5rem;
       font-size: 1.75rem;
     }
     form p {
-      margin-bottom: 1rem;
+      margin-bottom: 1.2rem;
     }
     label {
       display: block;
       font-weight: 600;
-      margin-bottom: 0.25rem;
-      font-size: 0.95rem;
+      margin-bottom: 0.4rem;
+      color: #555;
     }
-    input[type="text"], input[type="url"] {
+    input[type="text"],
+    input[type="url"] {
       width: 100%;
       padding: 0.75rem 1rem;
       border: 1px solid #ccd0d5;
-      border-radius: 4px;
+      border-radius: 6px;
       font-size: 1rem;
-      transition: border-color 0.2s;
+      transition: border-color .2s, box-shadow .2s;
     }
     input:focus {
       border-color: #0066cc;
+      box-shadow: 0 0 0 3px rgba(0,102,204,0.2);
       outline: none;
     }
-    .btn-submit {
-      display: block;
+    button.btn-submit {
       width: 100%;
       padding: 0.85rem;
       background: #0066cc;
       color: #fff;
-      font-size: 1rem;
+      font-size: 1.05rem;
       font-weight: 600;
-      text-align: center;
       border: none;
-      border-radius: 4px;
+      border-radius: 6px;
       cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-      margin-top: 1.5rem;
+      transition: background .2s, transform .1s;
     }
-    .btn-submit:hover {
+    button.btn-submit:hover {
       background: #005bb5;
       transform: translateY(-2px);
     }
-    .btn-submit:active {
+    button.btn-submit:active {
       transform: translateY(0);
     }
   </style>
 </head>
 <body>
-  <div class="card">
+  <!-- 回學生系統 -->
+  <a class="back-btn" href="student_system.html">← 回學生系統</a>
+
+  <div class="card" id="upload-card">
     <h1>作品上傳</h1>
-    <form action="upload_submission.php" method="post">
+    <form id="upload-form" action="upload_submission.php" method="post">
       <p>
         <label for="desc">作品說明</label>
-        <input id="desc" name="work_description" type="text" placeholder="請輸入作品簡介" required>
+        <input id="desc" name="work_description" type="text" placeholder="輸入作品簡介" required>
       </p>
       <p>
         <label for="poster">Poster URL</label>
@@ -99,10 +117,54 @@
       </p>
       <p>
         <label for="code">Code URL</label>
-        <input id="code" name="code_url" type="url" placeholder="https://github.com/username/repo">
+        <input id="code" name="code_url" type="url" placeholder="https://github.com/...">
       </p>
       <button class="btn-submit" type="submit">立即上傳</button>
     </form>
   </div>
+
+  <script>
+    // AJAX 提交，成功後顯示訊息與「回學生系統」按鈕
+    document.getElementById('upload-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const form = e.target;
+      const data = new FormData(form);
+      const submitBtn = form.querySelector('button');
+      submitBtn.disabled = true;
+      submitBtn.textContent = '上傳中...';
+
+      try {
+        const resp = await fetch(form.action, {
+          method: 'POST',
+          body: data
+        });
+        const result = await resp.json();
+
+        const card = document.getElementById('upload-card');
+        card.innerHTML = '';  // 清空表單
+
+        if (result.success) {
+          card.innerHTML = `
+            <h1>🎉 上傳成功！</h1>
+            <p style="text-align:center; margin:1rem 0;">您的作品已成功提交！</p>
+            <button id="back" class="btn-submit">回到學生系統</button>
+          `;
+          document.getElementById('back').addEventListener('click', () => {
+            location.href = 'student_system.html';
+          });
+        } else {
+          card.innerHTML = `
+            <h1>❌ 上傳失敗</h1>
+            <p style="color:red; text-align:center;">${result.error || '伺服器發生問題'}</p>
+            <button id="retry" class="btn-submit">重試</button>
+          `;
+          document.getElementById('retry').addEventListener('click', () => location.reload());
+        }
+      } catch (err) {
+        alert('網路異常，請稍後再試');
+        location.reload();
+      }
+    });
+  </script>
 </body>
 </html>
