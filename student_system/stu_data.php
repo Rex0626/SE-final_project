@@ -203,7 +203,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </p>
     <?php endif; ?>
 
-    <form method="POST" action="student_data.php">
+    <form method="POST" action="stu_data.php">
         <label for="name">姓名：</label>
         <input type="text" id="name" name="name" value="<?= htmlspecialchars($teacher['Name'] ?? '') ?>" required />
 
