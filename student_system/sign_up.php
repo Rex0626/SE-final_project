@@ -1,51 +1,58 @@
 <?php
 session_start();
-// 假設你在 login.php 成功登入後已經把 user_id 和 team_id 存進 $_SESSION
-if (!isset($_SESSION['user_id'])) {
-  header('Location: login.php');
-  exit;
+include 'config_rest.php';
+
+$team_name    = $_POST['teamName'];
+$work_name    = $_POST['workName'];
+$emails       = $_POST['emails'];       // array of emails
+$year         = $_POST['year'] ?? date('Y');
+$work_id      = generateUUID();
+$team_id      = generateUUID();
+$timestamp    = date('c');
+
+// 1. 新增 Works
+[$s1, $body1] = supabaseRequest('Works', 'POST', [
+  'WorkID'      => $work_id,
+  'Description' => $work_name,
+  'created_at'  => $timestamp,
+  'updated_at'  => $timestamp
+]);
+if ($s1 !== 201) exit("Works insert failed: ".json_encode($body1));
+
+// 2. 新增 All-Teams
+[$s2, $body2] = supabaseRequest('All-Teams', 'POST', [
+  'TeamID'          => $team_id,
+  'TeamName'        => $team_name,
+  'CompetitionYear' => $year.'-01-01',
+  'created_at'      => $timestamp,
+  'WorkID'          => $work_id
+]);
+if ($s2 !== 201) exit("Teams insert failed: ".json_encode($body2));
+
+// 3. 查出每個 Email 的 ParticipantID
+$members = [];
+foreach ($emails as $email) {
+  $e = urlencode($email);
+  // GET /Participants?Email=eq.xyz&select=ParticipantID
+  [$s3,$body3] = supabaseRequest("Participants?Email=eq.{$e}&select=ParticipantID", 'GET');
+  if ($s3===200 && !empty($body3[0]['ParticipantID'])) {
+    $members[] = [
+      'TeamID'        => $team_id,
+      'ParticipantID' => $body3[0]['ParticipantID'],
+      'Year'          => $year.'-01-01'
+    ];
+  }
 }
 
-// 引入 Supabase 連線設定
-require_once 'config.php';
+// 4. 批次插入 Team-Members
+[$s4,$body4] = supabaseRequest('Team-Members', 'POST', $members);
+if ($s4 !== 201) exit("Team-Members insert failed: ".json_encode($body4));
+
+// 回傳
+echo json_encode([
+  'success'          => true,
+  'team_id'          => $team_id,
+  'work_id'          => $work_id,
+  'members_inserted' => count($members)
+]);
 ?>
-<!DOCTYPE html>
-<html lang="zh-Hant">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>上傳作品</title>
-  <!-- Bootstrap CSS -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  />
-</head>
-<body>
-<?php include 'header.php'; // 上面寫的導覽列 ?>
-
-<div class="container mt-4">
-  <h2>上傳參賽作品</h2>
-  <form action="upload_submission.php" method="post" enctype="multipart/form-data">
-    <div class="mb-3">
-      <label for="file" class="form-label">選擇檔案：</label>
-      <input class="form-control" type="file" id="file" name="submission_file" required>
-    </div>
-    <div class="mb-3">
-      <label for="file_type" class="form-label">檔案類別：</label>
-      <select class="form-select" id="file_type" name="file_type" required>
-        <option value="proposal">企劃書</option>
-        <option value="code">程式碼</option>
-        <option value="poster">海報</option>
-      </select>
-    </div>
-    <button type="submit" class="btn btn-primary">上傳</button>
-  </form>
-</div>
-
-<!-- Bootstrap JS -->
-<script
-  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-></script>
-</body>
-</html>
