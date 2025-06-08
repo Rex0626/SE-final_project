@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head><meta charset="utf-8"><title>測試註冊</title></head>
+<body>
+  <form action="sign_up.php" method="post">
+    <!-- 假設要三位同學 -->
+    <input type="hidden" name="emails[]" value="stu001@example.com">
+    <input type="text" name="name_stu001@example.com"     value="學生一"><br>
+    <input type="text" name="phone_stu001@example.com"    value="10001"><br>
+    <input type="password" name="pwd_stu001@example.com"  value="password1"><br>
+
+    <input type="hidden" name="emails[]" value="stu002@example.com">
+    <input type="text" name="name_stu002@example.com"     value="學生二"><br>
+    <input type="text" name="phone_stu002@example.com"    value="10002"><br>
+    <input type="password" name="pwd_stu002@example.com"  value="password2"><br>
+
+    <input type="hidden" name="emails[]" value="stu003@example.com">
+    <input type="text" name="name_stu003@example.com"     value="學生三"><br>
+    <input type="text" name="phone_stu003@example.com"    value="10003"><br>
+    <input type="password" name="pwd_stu003@example.com"  value="password3"><br>
+
+    <!-- 隊伍名稱＆比賽 ID -->
+    <input type="text"  name="teamName"        value="我的隊伍"><br>
+    <input type="text"  name="competition_id"  value="4b1bafdd-661a-4f76-9b30-2b4a7d44fa47"><br>
+
+    <button type="submit">模擬註冊 POST</button>
+  </form>
+</body>
+</html>

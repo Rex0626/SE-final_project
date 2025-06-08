@@ -1,82 +1,100 @@
 <?php
 session_start();
+require_once 'config.php';
+
 if (!isset($_SESSION['team_id'])) {
   header('Location: login.php');
   exit;
 }
 
-require_once 'config.php';
-
 $teamId = $_SESSION['team_id'];
 
-// 1. 從 Evaluations 表找這支隊伍的成績
-$resEval = $supabase
-  ->from('Evaluations')
-  ->select('total_score, ranking, comments_url')
+// 1) 取 WorkID
+$resA = $supabase
+  ->from('All-Teams')
+  ->select('WorkID, CompetitionId')
   ->eq('TeamID', $teamId)
-  ->single()  // 假設一支隊只有一筆最終評分
+  ->single()
   ->execute();
+if ($resA->getStatus() !== 200) {
+  exit('讀取隊伍作品失敗：' . json_encode($resA->getBody()));
+}
+$workId       = $resA->getBody()['WorkID'];
+$competitionId= $resA->getBody()['CompetitionId'];
 
+// 2) 撈作品資訊
+$resW = $supabase
+  ->from('Works')
+  ->select('Description, Poster, VideoLink, CodeLink, created_at')
+  ->eq('WorkID', $workId)
+  ->single()
+  ->execute();
+$work = $resW->getBody();
+
+// 3) 撈評分明細
+$resE = $supabase
+  ->from('Evaluations')
+  ->select('Score, Comments, created_at')
+  ->eq('WorkID', $workId)
+  ->order('created_at', 'asc')
+  ->execute();
+$evals = $resE->getBody();
+
+// 計算平均分
+$total = 0;
+foreach ($evals as $e) { $total += floatval($e['Score']); }
+$avg = count($evals) ? round($total / count($evals), 2) : 0;
+
+// 4) 撈最新公告（可按 CompetitionId 或 Year 篩選）
+$resAnn = $supabase
+  ->from('Announcement')
+  ->select('Title, Content, Year')
+  ->order('created_at', 'desc')
+  ->limit(5)
+  ->execute();
+$anns = $resAnn->getBody();
 ?>
+
 <!DOCTYPE html>
-<html lang="zh-Hant">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>我的隊伍成績</title>
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  />
-</head>
+<html>
+<head><meta charset="utf-8"><title>我的作品與成績</title></head>
 <body>
-<?php include 'header.php'; ?>
+  <h1>作品資訊</h1>
+  <p><?= htmlspecialchars($work['Description']) ?></p>
+  <img src="<?= htmlspecialchars($work['Poster']) ?>" width="200"><br>
+  <a href="<?= htmlspecialchars($work['VideoLink']) ?>" target="_blank">觀看影片</a> |
+  <a href="<?= htmlspecialchars($work['CodeLink']) ?>" target="_blank">檢視程式碼</a>
+  <hr>
 
-<div class="container mt-4">
-  <h2>我的隊伍成績</h2>
-  <?php
-  if ($resEval->getStatus() === 200) {
-    $evalData = $resEval->getBody();
-    // 如果沒有任何評分結果，$evalData 可能為 null
-    if ($evalData) {
-      // 顯示隊伍名稱（從 All-Teams 撈）
-      $resTeam = $supabase
-        ->from('All-Teams')
-        ->select('TeamName')
-        ->eq('TeamID', $teamId)
-        ->single()
-        ->execute();
-      $teamName = ($resTeam->getStatus() === 200)
-        ? htmlspecialchars($resTeam->getBody()->teamname)
-        : '未知隊伍';
+  <h2>評分明細 (平均分：<?= $avg ?>)</h2>
+  <?php if (empty($evals)): ?>
+    <p>尚無評分</p>
+  <?php else: ?>
+    <ul>
+      <?php foreach ($evals as $e): ?>
+        <li>
+          分數：<?= htmlspecialchars($e['Score']) ?>　
+          評語：<?= htmlspecialchars($e['Comments'] ?? '—') ?>　
+          (<?= date('Y-m-d H:i', strtotime($e['created_at'])) ?>)
+        </li>
+      <?php endforeach; ?>
+    </ul>
+  <?php endif; ?>
+  <hr>
 
-      echo "<table class='table table-striped'>";
-      echo "<thead><tr><th>隊伍名稱</th><th>總分</th><th>名次</th><th>評審意見</th></tr></thead><tbody>";
-      $score = $evalData->total_score;
-      $rank  = $evalData->ranking;
-      $commentsUrl = $evalData->comments_url
-        ? "<a href='" . htmlspecialchars($evalData->comments_url) . "' target='_blank'>下載意見</a>"
-        : '無';
-
-      echo "<tr>
-              <td>{$teamName}</td>
-              <td>{$score}</td>
-              <td>{$rank}</td>
-              <td>{$commentsUrl}</td>
-            </tr>";
-      echo "</tbody></table>";
-
-    } else {
-      echo "<div class='alert alert-info'>目前尚未有評分結果，請稍後查看。</div>";
-    }
-  } else {
-    echo "<div class='alert alert-danger'>查詢失敗，狀態碼：" . $resEval->getStatus() . "</div>";
-  }
-  ?>
-</div>
-
-<script
-  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-></script>
+  <h2>最新公告／得獎資訊</h2>
+  <?php if (empty($anns)): ?>
+    <p>目前沒有公告</p>
+  <?php else: ?>
+    <ul>
+    <?php foreach ($anns as $a): ?>
+      <li>
+        <strong><?= htmlspecialchars($a['Title']) ?></strong>
+        (<?= htmlspecialchars(substr($a['Year'],0,4)) ?>)<br>
+        <?= nl2br(htmlspecialchars($a['Content'])) ?>
+      </li>
+    <?php endforeach; ?>
+    </ul>
+  <?php endif; ?>
 </body>
 </html>

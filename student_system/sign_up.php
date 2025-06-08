@@ -1,58 +1,101 @@
 <?php
+// sign_up.php
 session_start();
-include 'config_rest.php';
+require_once 'config.php';  // 定義 supabaseRequest() 與 generateUUID()
 
-$team_name    = $_POST['teamName'];
-$work_name    = $_POST['workName'];
-$emails       = $_POST['emails'];       // array of emails
-$year         = $_POST['year'] ?? date('Y');
-$work_id      = generateUUID();
-$team_id      = generateUUID();
-$timestamp    = date('c');
+// 回應 JSON
+header('Content-Type: application/json; charset=utf-8');
 
-// 1. 新增 Works
-[$s1, $body1] = supabaseRequest('Works', 'POST', [
-  'WorkID'      => $work_id,
-  'Description' => $work_name,
-  'created_at'  => $timestamp,
-  'updated_at'  => $timestamp
-]);
-if ($s1 !== 201) exit("Works insert failed: ".json_encode($body1));
-
-// 2. 新增 All-Teams
-[$s2, $body2] = supabaseRequest('All-Teams', 'POST', [
-  'TeamID'          => $team_id,
-  'TeamName'        => $team_name,
-  'CompetitionYear' => $year.'-01-01',
-  'created_at'      => $timestamp,
-  'WorkID'          => $work_id
-]);
-if ($s2 !== 201) exit("Teams insert failed: ".json_encode($body2));
-
-// 3. 查出每個 Email 的 ParticipantID
-$members = [];
-foreach ($emails as $email) {
-  $e = urlencode($email);
-  // GET /Participants?Email=eq.xyz&select=ParticipantID
-  [$s3,$body3] = supabaseRequest("Participants?Email=eq.{$e}&select=ParticipantID", 'GET');
-  if ($s3===200 && !empty($body3[0]['ParticipantID'])) {
-    $members[] = [
-      'TeamID'        => $team_id,
-      'ParticipantID' => $body3[0]['ParticipantID'],
-      'Year'          => $year.'-01-01'
-    ];
-  }
+// 只接受 POST
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo json_encode([
+        'success' => false,
+        'error'   => '只接受 POST 請求',
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
 }
 
-// 4. 批次插入 Team-Members
-[$s4,$body4] = supabaseRequest('Team-Members', 'POST', $members);
-if ($s4 !== 201) exit("Team-Members insert failed: ".json_encode($body4));
+// 1. 先註冊每個參賽者 (Participants)
+$membersEmails  = $_POST['emails'] ?? [];  // array of email
+$participantIDs = [];
 
-// 回傳
+foreach ($membersEmails as $email) {
+    $pid = generateUUID();
+    $payload = [[
+        'ParticipantID' => $pid,
+        'Name'          => trim($_POST['name_' . $email]  ?? ''),
+        'Phone'         => intval($_POST['phone_' . $email] ?? 0),
+        'Email'         => $email,
+        'Password'      => password_hash($_POST['pwd_' . $email] ?? '', PASSWORD_BCRYPT),
+        'Role'          => 'Student',
+    ]];
+
+    $resP = supabaseRequest('Participants', 'POST', $payload);
+    if ($resP['status'] !== 201) {
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'error'   => '參賽者註冊失敗',
+            'detail'  => $resP['body'],
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    $participantIDs[] = $pid;
+}
+
+// 2. 建立隊伍 (All-Teams) — 注意表名需 URL-encode 雙引號
+$teamId        = generateUUID();
+$competitionId = $_POST['competition_id'] ?? '';
+
+$teamsEndpoint = '%22All-Teams%22'; // 等同於 "All-Teams"
+$payloadTeam   = [[
+    'TeamID'        => $teamId,
+    'TeamName'      => trim($_POST['teamName']     ?? ''),
+    'CompetitionId' => $competitionId,
+    // WorkID 留空，上傳作品時再更新
+]];
+
+$resT = supabaseRequest($teamsEndpoint, 'POST', $payloadTeam);
+if ($resT['status'] !== 201) {
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'error'   => '隊伍建立失敗',
+        'status'  => $resT['status'],
+        'detail'  => $resT['body'],
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+// 3. 批次寫入隊員對應 (Team-Members)
+$tmEndpoint = '%22Team-Members%22'; // 等同於 "Team-Members"
+$tmPayload  = [];
+
+foreach ($participantIDs as $pid) {
+    $tmPayload[] = [
+        'TeamID'        => $teamId,
+        'ParticipantID' => $pid,
+    ];
+}
+
+$resTM = supabaseRequest($tmEndpoint, 'POST', $tmPayload);
+if ($resTM['status'] !== 201) {
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'error'   => 'Team-Members 寫入失敗',
+        'status'  => $resTM['status'],
+        'detail'  => $resTM['body'],
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+// 4. 註冊成功，存 Session 並回傳
+$_SESSION['team_id'] = $teamId;
+
 echo json_encode([
-  'success'          => true,
-  'team_id'          => $team_id,
-  'work_id'          => $work_id,
-  'members_inserted' => count($members)
-]);
-?>
+    'success' => true,
+    'team_id' => $teamId,
+], JSON_UNESCAPED_UNICODE);
