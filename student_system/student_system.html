@@ -1,24 +1,60 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>高雄大學激發學生創意競賽管理系統</title>
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../styles.css"/>
+    <style>
+      /* 簡單按鈕排列 */
+      .nav-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin: 2rem 0;
+      }
+      .nav-buttons a {
+        flex: 1;
+        text-align: center;
+        padding: 0.75rem 1rem;
+        background: #0066cc;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+      }
+      .nav-buttons a:hover {
+        background: #005bb5;
+      }
+    </style>
 </head>
-
 <body>
     <header>
         <h1>高雄大學激發學生創意競賽管理系統</h1>
     </header>
 
+    <!-- 功能按鈕區 -->
+    <nav class="nav-buttons">
+      <!-- 假設你還沒註冊隊伍，按這裡報名 -->
+      <a href="sign_up.html">修改個人資料／註冊隊伍</a>
+
+      <!-- 上傳作品（必須先註冊並登入後才會有 team_id） -->
+      <a href="upload_submission.html">上傳作品</a>
+
+      <!-- 選擇隊伍並查看成績 -->
+      <a href="view_results.html">查隊伍成績</a>
+
+      <!-- 查看所有得獎公告 -->
+      <a href="view_announcements.html">查看得獎資訊</a>
+
+      <!-- 修改自己隊伍資料，例如更改作品連結等 -->
+      <a href="edit_team.html">修改隊伍資料</a>
+    </nav>
 
     <footer>
-        <p>&copy; 2024 國立高雄大學 - 激發學生創意競賽管理系統</p>
+        <p>&copy; 2024 國立高雄大學 – 激發學生創意競賽管理系統</p>
     </footer>
 
-    <script src="../scripts.js"></script> <!-- 引入 JavaScript 文件 -->
-
+    <script src="../scripts.js"></script>
 </body>
-
 </html>
