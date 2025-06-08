@@ -90,7 +90,7 @@ if (is_array($users) && count($users) === 1) {
                 header('Location: ./student_system/student_system.html');
                 break;
             case 'teacher':
-                header('Location: ./teacher_system/teacher_system.html');
+                header('Location: ./teacher_system/teacher_system.php');
                 break;
             case 'judge':
                 header('Location: ./judge_system/judge_system.php');
