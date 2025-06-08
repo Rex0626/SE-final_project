@@ -18,6 +18,12 @@ function showIdleWarning() {
     }
 }
 
+// 監聽使用者互動事件來重設計時器
+['click', 'mousemove', 'keydown', 'scroll'].forEach(evt => {
+    window.addEventListener(evt, resetTimer);
+});
+</script>
+
 <?php
 session_start();
 require_once '../db_connect.php';
