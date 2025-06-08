@@ -1,113 +1,115 @@
 <?php
 session_start();
 
-//只有評審能進來
+// 檢查是否登入與角色
 if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'judge') {
     header("Location: ../login.php");
     exit();
 }
 
+// Supabase API 設定
+$apiUrl = 'https://fdkhwqwtjentmuzwhokc.supabase.co/rest/v1/Participants';
+$apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZka2h3cXd0amVudG11endob2tjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1MTE5NjksImV4cCI6MjA2NDA4Nzk2OX0.ZHijq5e612BceVP5fHLXSBaZF6vNXpOq5Hw5dzz7J8M'; // ⬅️請換上你的實際 API Key
+
 $email = $_SESSION['email'];
 
-//Supabase 設定
-$apiUrl = 'https://fdkhwqwtjentmuzwhokc.supabase.co/rest/v1/Participants';
-$apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZka2h3cXd0amVudG11endob2tjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1MTE5NjksImV4cCI6MjA2NDA4Nzk2OX0.ZHijq5e612BceVP5fHLXSBaZF6vNXpOq5Hw5dzz7J8M';  
-$url = $apiUrl . '?Email=eq.' . urlencode($email);
-
-// 呼叫 API
-$ch = curl_init($url);
+// 從 Supabase 取得資料
+$queryUrl = $apiUrl . '?Email=eq.' . urlencode($email);
+$ch = curl_init($queryUrl);
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'apikey: ' . $apiKey,
-    'Authorization: Bearer ' . $apiKey,
-    'Accept: application/json'
+    "apikey: $apiKey",
+    "Authorization: Bearer $apiKey",
+    "Accept: application/json"
 ]);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 $response = curl_exec($ch);
 curl_close($ch);
-
-//處理 JSON 回應
 $data = json_decode($response, true);
-if (is_array($data) && count($data) === 1) {
-    $user = $data[0];
-    $name = $user['Name'] ?? '';
-    $phone = $user['Phone'] ?? '';
-    $role = $user['Role'] ?? '';
-    $email = $user['Email'] ?? '';
-    $password = $user['Password'] ?? '';
-} else {
-    $error = '查無資料';
-}
-?>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>評審委員資料</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: "Microsoft JhengHei", sans-serif;
-            background-color: #f0f0f0;
-            padding: 20px;
-        }
-        .container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            margin: auto;
-        }
-        h2 {
-            text-align: center;
-            color: #635031;
-        }
-        .info {
-            margin: 15px 0;
-            font-size: 18px;
-        }
-        .back-btn {
-  	    position: absolute;
-  	    top: 20px;
-  	    right: 130px; 
-  	    background-color: #6c757d;
-  	    color: white;
-   	    padding: 10px 18px;
-  	    border: none;
-  	    border-radius: 5px;
-  	    font-size: 14px;
-  	    text-decoration: none;
-  	    transition: background-color 0.3s;
-	}
-	.back-btn:hover {
-  	    background-color: #5a6268;
-	}
 
-    </style>
+if (!isset($data[0])) {
+    echo "<script>alert('找不到該使用者資料'); window.location.href='judge_system.php';</script>";
+    exit();
+}
+
+$user = $data[0];
+?>
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>檢視個人資訊</title>
+  <style>
+    body {
+      font-family: "Microsoft JhengHei", sans-serif;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 20px;
+    }
+    header {
+      background: linear-gradient(135deg, #ffcc00, #0056b3);
+      color: white;
+      padding: 30px 0;
+      text-align: center;
+      border-bottom: 5px solid #003366;
+      position: relative;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+      color: black;
+    }
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      background-color: #6c757d;
+      border: none;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .back-btn:hover {
+      background-color: #5a6268;
+    }
+    .container {
+      max-width: 500px;
+      margin: 30px auto;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .info {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+  </style>
 </head>
 <body>
+  <header>
+    <h1>檢視個人資訊</h1>
+    <a href="judge_system.php" class="back-btn">返回主頁</a>
+  </header>
 
-<div class="container">
-    <?php if (isset($error)): ?>
-        <h2>發生錯誤</h2>
-        <p style="color: red; text-align: center;"><?php echo $error; ?></p>
-    <?php else: ?>
-        <h2>歡迎，<?php echo htmlspecialchars($name); ?>!</h2>
-	<a href="judge_system.php" class="back-btn">返回主頁</a>
-        <p>以下是您的個人資料：</p>
-        <div class="info"><strong>姓名：</strong> <?php echo htmlspecialchars($name); ?></div>
-        <div class="info"><strong>電話：</strong> <?php echo htmlspecialchars($phone); ?></div>
-        <div class="info"><strong>電子郵件：</strong> <?php echo htmlspecialchars($email); ?></div>
-        <div class="info"><strong>職稱：</strong> <?php echo htmlspecialchars($role); ?></div>
-        <div class="info"><strong>密碼：</strong> <?php echo htmlspecialchars($password); ?></div>
-    <?php endif; ?>
+  <div class="container">
+    <h2>歡迎，<?= htmlspecialchars($user['Name']) ?>！</h2>
 
-    
-</div>
-
+    <div class="info"><strong>參與者 ID：</strong> <?= htmlspecialchars($user['ParticipantID']) ?></div>
+    <div class="info"><strong>姓名：</strong> <?= htmlspecialchars($user['Name']) ?></div>
+    <div class="info"><strong>電話：</strong> <?= htmlspecialchars($user['Phone']) ?></div>
+    <div class="info"><strong>電子郵件：</strong> <?= htmlspecialchars($user['Email']) ?></div>
+    <div class="info"><strong>職稱：</strong> <?= htmlspecialchars($user['Role']) ?></div>
+    <div class="info"><strong>密碼：</strong> <?= htmlspecialchars($user['Password']) ?></div>
+  </div>
 </body>
 </html>
-
-
 
 
