@@ -105,7 +105,8 @@ footer {
     font-size: 16px;
 }
 .main-content input[type="text"],
-.main-content input[type="email"] {
+.main-content input[type="email"],
+.main-content input[type="password"] {
     width: 100%;
     padding: 10px 5px;
     margin-bottom: 20px;
@@ -114,8 +115,10 @@ footer {
     font-size: 16px;
     transition: border-color 0.3s ease;
 }
+
 .main-content input[type="text"]:focus,
-.main-content input[type="email"]:focus {
+.main-content input[type="email"]:focus,
+.main-content input[type="password"]:focus {
     border-color: #ffcc00;
     outline: none;
 }
@@ -197,6 +200,8 @@ footer {
     padding: 8px 14px;
     border-radius: 5px;
     margin-right: 8px;
+    margin-top: 12px;
+    display: inline-block;
     font-size: 14px;
     transition: background-color 0.2s ease;
 }
@@ -306,6 +311,12 @@ footer {
     letter-spacing: 1px;
 }
 /* ============================= */
+
+
+
+
+
+
 
 
 
