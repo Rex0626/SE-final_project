@@ -41,7 +41,7 @@ if ($rP['status'] === 200) {
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>所有作品評分列表</title>
+  <title>所有作品評分列表｜激發學生創意競賽</title>
   <style>
     /* Reset & 基本 */
     * { margin:0; padding:0; box-sizing:border-box; }
@@ -68,8 +68,8 @@ if ($rP['status'] === 200) {
 
     /* Header */
     header {
-      background: linear-gradient(120deg, #0066cc, #00aaff);
-      color: #fff;
+      background: linear-gradient(90deg, #ffcc00, #004aad);
+      color: #222;
       padding: 1.5rem;
       text-align: center;
     }
