@@ -10,7 +10,7 @@ $headers = [
 
 // 假設已透過 session 或其他方式取得登入者 email
 session_start();
-$loginEmail = $_SESSION['user_email'] ?? null;
+$loginEmail = $_SESSION['email'] ?? null;
 
 if (!$loginEmail) {
     http_response_code(401);
@@ -101,7 +101,6 @@ foreach ($emails as $email) {
         $newMembers[] = [
             "TeamID" => $teamID,
             "ParticipantID" => $pid,
-            "Year" => date("Y") . "-01-01"
         ];
     }
 }
@@ -114,5 +113,5 @@ if (count($newMembers) === 0) {
 // 寫入新 Team-Members
 curl_request("$SUPABASE_URL/rest/v1/Team-Members", $headers, "POST", $newMembers);
 
-echo json_encode(["success" => true, "message" => "隊伍更新成功"]);
+header("Location: student_system.html");
 ?>

@@ -55,7 +55,7 @@ if (!$participants || count($participants) == 0) {
 $participantID = $participants[0]['ParticipantID'];
 
 // 3. 檢查是否有尚未開始且可報名的比賽
-$competitions = curl_supa_request("Competitions?StartDate=gt." . date('Y-m-d') . "&RegistrationOpen=eq.true", 'GET');
+$competitions = curl_supa_request("Competitions?Start_date=gt." . date('Y-m-d') , 'GET');
 if (!$competitions || count($competitions) == 0) {
     header("Location: student_system.html?msg=" . urlencode("目前沒有可報名的比賽"));
     exit;
@@ -69,5 +69,7 @@ if ($registrations && count($registrations) > 0) {
 }
 
 // 都通過，直接導向報名頁
-header("Location: registration_team.html");
+$_SESSION['available_competitions'] = $competitions;
+header("Location: register_team.html");
 exit;
+?>

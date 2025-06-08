@@ -78,11 +78,14 @@ foreach ($members as $m) {
     }
 }
 
+$workID=$teamData[0]['WorkID'];
+$workData = curl_supa_request("Works?WorkID=eq.$workID", 'GET');
+
 echo json_encode([
     'status' => 'success',
     'data' => [
         'teamName' => $teamData[0]['TeamName'],
-        'workName' => $teamData[0]['WorkID'], // 可再查 `Works` 表取得名稱
+        'workName' => $workData[0]['Description'], // 可再查 `Works` 表取得名稱
         'members' => $emails
     ]
 ]);
