@@ -1,24 +1,106 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>高雄大學激發學生創意競賽管理系統</title>
-    <link rel="stylesheet" href="../styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>高雄大學激發學生創意競賽管理系統</title>
+  <link rel="stylesheet" href="../styles.css"/>
+  <style>
+    /* 基本版面 */
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      position: relative; /* 為了讓家按鈕絕對定位 */
+      background: linear-gradient(90deg, #ffcc00, #004aad);
+      color: #222;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    /* 返回首頁按鈕 */
+    .btn-home {
+      position: absolute;
+      top: 50%;
+      right: 1.5rem;
+      transform: translateY(-50%);
+      background: #fff;
+      color: #004aad;
+      padding: 0.5rem 1rem;
+      font-weight: bold;
+      border-radius: 4px;
+      text-decoration: none;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn-home:hover {
+      background: #f4f4f4;
+      transform: translateY(-50%) translateY(-2px);
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    /* 按鈕區：直排置中 */
+    .nav-buttons {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      width: 100%;
+      max-width: 360px;
+    }
+    .nav-buttons a {
+      display: block;
+      width: 100%;
+      padding: 1rem 1.5rem;
+      font-size: 1.25rem;
+      text-align: center;
+      background: #0066cc;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .nav-buttons a:hover {
+      background: #005bb5;
+      transform: translateY(-2px);
+    }
+
+    footer {
+      background: #f4f4f4;
+      text-align: center;
+      padding: 0.75rem;
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
-
 <body>
-    <header>
-        <h1>高雄大學激發學生創意競賽管理系統</h1>
-    </header>
+  <header>
+    <h1>高雄大學激發學生創意競賽管理系統</h1>
+    <!-- 大按鈕：返回首頁 -->
+    <a href="../main.html" class="btn-home">返回首頁</a>
+  </header>
 
+  <main>
+    <nav class="nav-buttons">
+      <a href="sign_up.html">修改個人資料／註冊隊伍</a>
+      <a href="upload_submission.html">上傳作品</a>
+      <a href="eval_list.php">查隊伍成績</a>
+      <a href="view_announcements.html">查看得獎資訊</a>
+      <a href="edit_team.html">修改隊伍資料</a>
+    </nav>
+  </main>
 
-    <footer>
-        <p>&copy; 2024 國立高雄大學 - 激發學生創意競賽管理系統</p>
-    </footer>
-
-    <script src="../scripts.js"></script> <!-- 引入 JavaScript 文件 -->
-
+  <footer>
+    <p>&copy; 2024 國立高雄大學 – 激發學生創意競賽管理系統</p>
+  </footer>
 </body>
-
 </html>

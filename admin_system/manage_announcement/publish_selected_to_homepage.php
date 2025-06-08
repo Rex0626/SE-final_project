@@ -27,7 +27,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['selected'])) {
     $announcements = json_decode($response, true);
 
     if (!is_array($announcements)) {
-        die("❌ 公告資料取得錯誤");
+        echo "<h3 style='color:red'>❌ 寫入首頁公告檔案失敗,3 秒後返回</h3>";
+        echo "<script>
+            setTimeout(function() {
+                window.location.href = './main.php';
+            }, 3000); // 3 秒後返回
+        </script>";
+        exit();
     }
 
     // 檢查是否有公告資料
@@ -48,13 +54,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['selected'])) {
     // 寫入首頁可載入的檔案（路徑依專案調整）
     $filePath = __DIR__ . '/homepage_announcements.html';
     if (file_put_contents($filePath, $html) === false) {
-        die("❌ 寫入首頁公告檔案失敗");
+        echo "<h3 style='color:red'>❌ 寫入首頁公告檔案失敗,,3 秒後返回</h3>";
+        echo "<script>
+            setTimeout(function() {
+                window.location.href = './main.php';
+            }, 3000); // 3 秒後返回
+        </script>";
+        exit();
     }
 
-    // 發佈成功後導回公告管理頁（可加參數顯示成功訊息）
-    header('Location: ./main.php?status=success');
+    // ✅ 成功：顯示 alert + 回首頁
+    echo "<script>
+        alert('✅ 公告已成功發佈到首頁！');
+        window.location.href = './main.php';
+    </script>";
     exit();
 
 } else {
-    die("❌ 未選擇任何公告");
+    echo "<h3 style='color:red'>❌ 未選擇任何公告,3 秒後返回</h3>";
+    echo "<script>
+        setTimeout(function() {
+            window.location.href = './main.php';
+        }, 3000); // 3 秒後返回
+    </script>";
 }

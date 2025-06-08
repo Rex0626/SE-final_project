@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head><meta charset="utf-8"><title>註冊隊伍</title></head>
+<body>
+  <h1>測試 註冊 隊伍 (sign_up.php)</h1>
+  <form action="sign_up.php" method="post">
+    <!-- 三位成員舉例 -->
+    <input type="hidden" name="emails[]" value="stu001@example.com">
+    <label>學生一 名稱：<input name="name_stu001@example.com" value="學生一"></label><br>
+    <label>學生一 電話：<input name="phone_stu001@example.com" value="10001"></label><br>
+    <label>學生一 密碼：<input name="pwd_stu001@example.com" value="pass1"></label><br>
+
+    <input type="hidden" name="emails[]" value="stu002@example.com">
+    <label>學生二 名稱：<input name="name_stu002@example.com" value="學生二"></label><br>
+    <label>學生二 電話：<input name="phone_stu002@example.com" value="10002"></label><br>
+    <label>學生二 密碼：<input name="pwd_stu002@example.com" value="pass2"></label><br>
+
+    <input type="hidden" name="emails[]" value="stu003@example.com">
+    <label>學生三 名稱：<input name="name_stu003@example.com" value="學生三"></label><br>
+    <label>學生三 電話：<input name="phone_stu003@example.com" value="10003"></label><br>
+    <label>學生三 密碼：<input name="pwd_stu003@example.com" value="pass3"></label><br>
+
+    <label>隊伍名稱：<input name="teamName" value="我的隊伍"></label><br>
+    <label>CompetitionId：<input name="competition_id" value="4b1bafdd-661a-4f76-9b30-2b4a7d44fa47"></label><br>
+
+    <button type="submit">送出註冊</button>
+  </form>
+</body>
+</html>
