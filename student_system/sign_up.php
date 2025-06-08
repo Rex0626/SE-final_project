@@ -1,12 +1,16 @@
 <?php
+require_once 'sign_up.php';         // 確保可以用到 callSupabase()
+header('Content-Type: application/json');
+$res = callSupabase('Participants?select=ParticipantID&limit=1','GET');
+echo json_encode($res);
 // sign_up.php
 date_default_timezone_set('Asia/Taipei');
 session_start();
 header('Content-Type: application/json; charset=utf-8');
 
 // ← 填上你的 Supabase 專案參數 ←
-$SUPABASE_URL = 'https://fdkhwqwtjentmuzwhokc.supabase.co';
-$SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZka2h3cXd0amVudG11endob2tjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1MTE5NjksImV4cCI6MjA2NDA4Nzk2OX0.ZHijq5e612BceVP5fHLXSBaZF6vNXpOq5Hw5dzz7J8M'; // 建議使用 Server Role
+$SUPABASE_URL ='https://fdkhwqwtjentmuzwhokc.supabase.co';
+$SUPABASE_KEY ='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZka2h3cXd0amVudG11endob2tjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1MTE5NjksImV4cCI6MjA2NDA4Nzk2OX0.ZHijq5e612BceVP5fHLXSBaZF6vNXpOq5Hw5dzz7J8M'; // 建議使用 Server Role
 /**
  * 發送 Supabase REST 請求
  */
@@ -133,10 +137,4 @@ if ($res['status'] !== 201) {
     ], JSON_UNESCAPED_UNICODE);
     exit;
 }
-
-// 4) 註冊成功，存 Session 並回傳 team_id
-$_SESSION['team_id'] = $teamId;
-echo json_encode([
-    'success' => true,
-    'team_id' => $teamId
-], JSON_UNESCAPED_UNICODE);
+?>
