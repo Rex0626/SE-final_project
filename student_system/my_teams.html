@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title>我的隊伍</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; }
+    ul { list-style: none; padding: 0; }
+    li { margin: 0.5rem 0; }
+    a.button { 
+      display: inline-block; padding: 0.5rem 1rem; 
+      background: #007bff; color: white; text-decoration: none; border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>我的隊伍</h1>
+  <div id="teams">載入中⋯⋯</div>
+
+  <script>
+    fetch('my_teams.php')
+      .then(r=>r.json())
+      .then(data=>{
+        const el = document.getElementById('teams');
+        if(!data.success) {
+          el.innerHTML = `<p style="color:red">${data.error}</p>`;
+          return;
+        }
+        if(data.teams.length===0) {
+          el.innerHTML = '<p>你目前尚未加入任何隊伍。</p>';
+          return;
+        }
+        let html = '<ul>';
+        data.teams.forEach(t => {
+          html += `<li>
+            <strong>${t.TeamName}</strong>
+            <a class="button" href="view_results.html?team_id=${t.TeamID}">查看成績</a>
+          </li>`;
+        });
+        html += '</ul>';
+        el.innerHTML = html;
+      })
+      .catch(err=>{
+        document.getElementById('teams').innerHTML = 
+          `<p style="color:red">載入失敗：${err}</p>`;
+      });
+  </script>
+</body>
+</html>
