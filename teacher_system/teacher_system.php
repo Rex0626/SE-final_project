@@ -14,9 +14,16 @@ function resetTimer() {
 function showIdleWarning() {
     const userConfirmed = confirm("您已閒置超過 10 分鐘，系統即將登出。請按「確定」繼續。");
     if (userConfirmed) {
-        window.location.href = "../main.html?timeout=1";
+        window.location.href = "../login.html?role=Teacher";
     }
 }
+
+// 監聽使用者互動事件來重設計時器
+['click', 'mousemove', 'keydown', 'scroll'].forEach(evt => {
+    window.addEventListener(evt, resetTimer);
+});
+</script>
+
 
 <?php
 session_start();
@@ -44,8 +51,8 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'teacher') {
     <nav>
         <ul class="drop-down-menu">
             <li><a href="view_my_data/view_data.php">瀏覽隊伍資料</a></li>
-            <li><a href="view_rank/view_rank.php">瀏覽競賽排名</a></li>
-            <li><a href="modify_my_data/modify_data.php">修改個人資料</a></li>
+            <li><a href="view_rank/view_rank.php">瀏覽競賽資料</a></li>
+            <li><a href="modify_my_data/modify_data.php">瀏覽與修改個人資料</a></li>
         </ul>
     </nav>
 
@@ -60,3 +67,4 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'teacher') {
     </footer>
 </body>
 </html>
+
