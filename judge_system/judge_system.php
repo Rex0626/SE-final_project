@@ -1,24 +1,13 @@
 <?php
 session_start();
 
-//檢查登入與角色
+// 檢查登入與角色
 if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'judge') {
     header("Location: ../login.php");
     exit();
 }
 
-// 若網址有 ?logout=true 就登出
-if (isset($_GET['logout'])) {
-    session_unset();
-    session_destroy();
-    header("Location: ../main.php");
-    exit();
-}
-
-// 取得登入者資訊
-$name = $_SESSION['name'];
-$email = $_SESSION['email'];
-// 如果尚未設定 judge_id，就連 Supabase 查詢一次
+// 若尚未有 judge_id，從 Supabase 抓取並存入 session
 if (!isset($_SESSION['judge_id'])) {
     $apiUrl = 'https://fdkhwqwtjentmuzwhokc.supabase.co/rest/v1/Participants';
     $apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZka2h3cXd0amVudG11endob2tjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1MTE5NjksImV4cCI6MjA2NDA4Nzk2OX0.ZHijq5e612BceVP5fHLXSBaZF6vNXpOq5Hw5dzz7J8M';
@@ -40,10 +29,23 @@ if (!isset($_SESSION['judge_id'])) {
     if (is_array($result) && count($result) > 0 && isset($result[0]['ParticipantID'])) {
         $_SESSION['judge_id'] = $result[0]['ParticipantID'];
     } else {
-        echo "<script>alert('查無評審 ID，請重新登入'); window.location.href='login.php';</script>";
+        echo "<script>alert('無法取得評審 ID，請重新登入'); window.location.href='../login.php';</script>";
         exit();
     }
 }
+
+// ✅ 登出處理
+if (isset($_GET['logout'])) {
+    session_unset();
+    session_destroy();
+    header("Location: ../main.php");
+    exit();
+}
+
+// 顯示者資訊
+$name = $_SESSION['name'];
+$email = $_SESSION['email'];
+$judgeId = $_SESSION['judge_id'];
 ?>
 
 <!DOCTYPE html>
@@ -189,7 +191,7 @@ if (!isset($_SESSION['judge_id'])) {
   </div>
 
   <main class="main-content">
-    <h2>歡迎 <?= htmlspecialchars($name) ?> 使用評審系統</h2>
+    <h2>歡迎使用評審系統</h2>
     <p>請從上方選單選取您想執行的操作。</p>
     <p><strong>登入者 Participant ID：</strong> <?= htmlspecialchars($_SESSION['judge_id']) ?></p>
 
@@ -200,6 +202,7 @@ if (!isset($_SESSION['judge_id'])) {
   </footer>
 </body>
 </html>
+
 
 
 

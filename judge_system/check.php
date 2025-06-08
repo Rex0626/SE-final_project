@@ -100,7 +100,7 @@ $user = $data[0];
   </header>
 
   <div class="container">
-    <h2>歡迎，<?= htmlspecialchars($user['Name']) ?>！</h2>
+    
 
     <div class="info"><strong>參與者 ID：</strong> <?= htmlspecialchars($user['ParticipantID']) ?></div>
     <div class="info"><strong>姓名：</strong> <?= htmlspecialchars($user['Name']) ?></div>
