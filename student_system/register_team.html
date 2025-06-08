@@ -23,6 +23,14 @@
   <div class="container">
     <h2 class="text-center mb-4">報名參賽表單</h2>
     <form id="team-form" method="POST" action="register_team.php">
+      
+      <div class="form-group">
+        <label for="competitionSelect">選擇參加的比賽</label>
+        <select class="form-control" id="competitionSelect" name="competition_id" required>
+          <option value="">載入中...</option>
+        </select>
+      </div>
+
       <div class="form-group">
         <label for="teamSize">團隊人數（含指導老師）</label>
         <select class="form-control" id="teamSize" name="team_size" required>
@@ -77,6 +85,37 @@
         memberFieldsDiv.appendChild(input);
       }
     });
+    // 載入比賽資料
+    fetch('get_available_competitions.php')
+      .then(res => {
+        console.log('HTTP status:', res.status);
+        if (!res.ok) throw new Error('Network response was not ok');
+        return res.json();
+      })
+      .then(data => {
+        console.log('data:', data);
+        const competitionSelect = document.getElementById('competitionSelect');
+        competitionSelect.innerHTML = '<option value="">請選擇比賽</option>';
+
+        if (data.length === 0) {
+          competitionSelect.innerHTML = '<option value="">目前無可報名比賽</option>';
+          competitionSelect.disabled = true;
+        } else {
+          data.forEach(comp => {
+          const option = document.createElement('option');
+          option.value = comp.Id;
+          option.textContent = `${comp.Title}（${comp.Start_date} 開始）`;
+         competitionSelect.appendChild(option);
+        });
+      }
+    })
+    .catch(error => {
+      console.error('載入比賽資料失敗', error);
+      const competitionSelect = document.getElementById('competitionSelect');
+      competitionSelect.innerHTML = '<option value="">載入失敗，請稍後再試</option>';
+      competitionSelect.disabled = true;
+    });
+
   </script>
 </body>
 </html>

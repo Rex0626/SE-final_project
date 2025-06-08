@@ -6,6 +6,7 @@ $SUPABASE_URL = 'https://fdkhwqwtjentmuzwhokc.supabase.co';
 $SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZka2h3cXd0amVudG11endob2tjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1MTE5NjksImV4cCI6MjA2NDA4Nzk2OX0.ZHijq5e612BceVP5fHLXSBaZF6vNXpOq5Hw5dzz7J8M'; // 建議使用 Server Role
 
 // ✅ 取得前端送來的資料
+$competition_id = $_POST['competition_id'];
 $team_name = $_POST['teamName'];
 $work_name = $_POST['workName'];
 $emails = $_POST['emails']; // 這是一個 array
@@ -50,7 +51,7 @@ curl_close($ch);
 $team_payload = json_encode([
     'TeamID' => $team_id,
     'TeamName' => $team_name,
-    'CompetitionYear' => $year . "-01-01",
+    'CompetitionId' => $competition_id,
     'created_at' => $timestamp,
     'WorkID' => $work_id
 ]);
@@ -86,7 +87,6 @@ foreach ($emails as $email) {
         $members[] = [
             'TeamID' => $team_id,
             'ParticipantID' => $data[0]['ParticipantID'],
-            'Year' => $year . "-01-01"
         ];
     }
 }
@@ -105,11 +105,5 @@ curl_setopt($ch, CURLOPT_POST, true);
 $response4 = curl_exec($ch);
 curl_close($ch);
 
-// ✅ 回傳結果
-echo json_encode([
-    'success' => true,
-    'team_id' => $team_id,
-    'work_id' => $work_id,
-    'members_inserted' => count($members),
-]);
+header("Location: student_system.html");
 ?>
