@@ -14,7 +14,7 @@ function resetTimer() {
 function showIdleWarning() {
     const userConfirmed = confirm("您已閒置超過 10 分鐘，系統即將登出。請按「確定」繼續。");
     if (userConfirmed) {
-        window.location.href = "../../main.html?timeout=1";
+        window.location.href = "../../login.html?role=Teacher";
     }
 }
 
@@ -131,8 +131,8 @@ if (is_array($teamIDs)) {
     <nav>
     <ul class="drop-down-menu">
         <li><a href="view_data.php">瀏覽隊伍資料</a></li>
-        <li><a href="../view_rank/view_rank.php">瀏覽競賽排名</a></li>
-        <li><a href="../modify_my_data/modify_data.php">修改個人資料</a></li>
+        <li><a href="../view_rank/view_rank.php">瀏覽競賽資料</a></li>
+        <li><a href="../modify_my_data/modify_data.php">瀏覽與修改個人資料</a></li>
     </ul>
     </nav>
 
@@ -160,7 +160,7 @@ if (is_array($teamIDs)) {
                 <?php if (!empty($works[$team['TeamID']])): ?>
                     <?php foreach ($works[$team['TeamID']] as $work): ?>
                         <div class="work-item">
-                            <p><strong>作品描述：</strong><br><?php echo nl2br(htmlspecialchars($work['Description'])); ?></p>
+                            <p><strong>作品描述：</strong><?php echo nl2br(htmlspecialchars($work['Description'])); ?></p>
                             <div class="work-links">
                                 <?php if (!empty($work['CodeLink'])): ?>
                                     <a href="<?php echo htmlspecialchars($work['CodeLink']); ?>" target="_blank">查看程式碼</a>
@@ -184,3 +184,4 @@ if (is_array($teamIDs)) {
     </div>
 </body>
 </html>
+
