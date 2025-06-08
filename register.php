@@ -55,7 +55,7 @@ if (is_array($existing) && count($existing) > 0) {
 }
 
 // Step 2: 加密密碼
-$hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+$hashedPassword = $password;
 
 // Step 3: 建立新使用者資料
 $data = [
