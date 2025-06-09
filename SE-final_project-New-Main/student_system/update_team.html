@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>修改隊伍成員</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"/>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  <style>
+    a.back-btn {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background .2s;
+    }
+    body {
+      padding-top: 50px;
+    }
+    .container {
+      max-width: 600px;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <a class="back-btn" href="student_system.html">回學生系統</a>
+  <div class="container">
+    <h2 class="text-center mb-4">修改隊伍成員</h2>
+    <form id="update-form" method="POST" action="update_team.php">
+      <div class="form-group">
+        <label for="teamName">團隊名稱</label>
+        <input type="text" class="form-control" id="teamName" name="teamName" required />
+      </div>
+
+      <div class="form-group">
+        <label for="projectTitle">作品名稱</label>
+        <input type="text" class="form-control" id="projectTitle" name="workName" required />
+      </div>
+
+      <div id="memberFields" class="form-group">
+        <!-- 成員欄位將由 JavaScript 動態產生 -->
+      </div>
+
+      <button type="submit" class="btn glow-on-hover center btn-block">確認修改</button>
+    </form>
+  </div>
+
+  <script>
+    // 假設這是後端 AJAX 回傳的資料（請用實際 AJAX 替換）
+  window.addEventListener('DOMContentLoaded', () => {
+    const teamData = JSON.parse(localStorage.getItem('teamData'));
+    if (!teamData) {
+        alert('無法取得隊伍資料');
+        window.location.href = 'student_system.html';
+        return;
+    }
+
+    // 自動填入隊伍資訊
+    document.getElementById('teamName').value = teamData.teamName;
+    document.getElementById('projectTitle').value = teamData.workName;
+
+    const memberFieldsDiv = document.getElementById('memberFields');
+    const members = teamData.members;
+
+    const maxMembers = 6;
+    const minMembers = 2;
+
+    const totalMembers = Math.min(Math.max(members.length, minMembers), maxMembers);
+
+    for (let i = 0; i < totalMembers; i++) {
+      const label = document.createElement('label');
+      label.innerText = `成員 ${i + 1} Email`;
+      label.setAttribute('for', `member${i + 1}`);
+
+      const input = document.createElement('input');
+      input.type = 'email';
+      input.className = 'form-control mb-2';
+      input.name = 'emails[]';
+      input.id = `member${i + 1}`;
+      input.required = true;
+      input.value = members[i] || '';
+
+      memberFieldsDiv.appendChild(label);
+      memberFieldsDiv.appendChild(input);
+    }
+  });
+  </script>
+</body>
+</html>

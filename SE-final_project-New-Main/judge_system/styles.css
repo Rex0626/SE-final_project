@@ -1,0 +1,296 @@
+/* 標頭樣式 - 更新過的更有趣的設計 */
+header {
+    background: linear-gradient(135deg, #FFEFD4, #69503F); /* 改過ㄉ */
+    color: white;
+    padding: 30px 0;
+    text-align: center;
+    border-bottom: 5px solid #221F1F; /* 深咖啡邊框 */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 36px;
+    color: #FFF9F4;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #FFF9F4;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+footer {
+    background-color: #f7f3f3;
+    text-align: center;
+    padding: 10px 0;
+    border-top: 2px solid #ffcc00;
+    margin-top: auto;
+}
+
+
+/*more-link*/
+.more-link {
+    text-align: right;
+    padding: 10px 20px;
+    background-color: #f1f1f1;
+    border-top: 1px solid #ddd;
+}
+
+.more-link a {
+    text-decoration: none;
+    color: #007bff;
+    font-size: 14px;
+}
+
+.more-link a:hover {
+    text-decoration: underline;
+}
+
+.more-link {
+    text-align: right;
+    margin-top: 10px;
+}
+
+.more-link a {
+    text-decoration: none;
+    font-size: 14px;
+    color: #007bff;
+    transition: color 0.3s;
+}
+
+.more-link a:hover {
+    color: #0056b3;
+}
+
+
+/*subsystem*/
+.subsystem-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+}
+
+.subsystem {
+    background-color: #f4a9b6;
+    padding: 20px;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(71, 61, 59, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    font-size: 18px;
+    flex: 1;
+    max-width: 200px;
+}
+
+.subsystem:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+}
+
+.subsystem a {
+    display: block;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+    color: rgb(6, 6, 6);
+}
+
+
+/*news*/
+.news-container {
+    width: 80%;
+    margin: 20px auto;
+    background-color: #ffffff;
+    border: 1px solid #d1e7ff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.news-header {
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.news-header img {
+    width: 32px;
+    height: 32px;
+}
+
+.news-list {
+    list-style: none;
+    margin: 0;
+    padding: 10px 20px;
+}
+
+.news-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.news-item:last-child {
+    border-bottom: none;
+}
+
+.news-item a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+    flex-grow: 1;
+}
+
+.news-item a:hover {
+    text-decoration: underline;
+}
+
+.news-date {
+    color: #666;
+    font-size: 14px;
+    margin-left: 10px;
+    white-space: nowrap;
+}
+
+/*carousel*/
+.carousel {
+    position: relative;
+    overflow: hidden;
+    width: 80%;
+    margin: 20px auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-images {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.carousel-images img {
+    width: 100%;
+    flex-shrink: 0;
+}
+
+/* 裁剪图片的容器 */
+.carousel-images img {
+    width: 100%;
+    height: 300px; /* 限制高度 */
+    object-fit: cover; /* 图片填充容器并裁剪多余部分 */
+    cursor: pointer; /* 鼠标悬停时显示点击样式 */
+
+}
+
+.carousel-buttons {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+}
+
+.carousel-buttons button {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 50%;
+}
+.logout-btn {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    background-color: #b5a68d;  /* 米白棕色 */
+    color: white;
+    padding: 10px 18px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.logout-btn:hover {
+    background-color: #946f3a;
+}
+.card-menu {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    padding: 40px 20px;
+    background: transparent;
+    flex-wrap: wrap;
+}
+
+.card-menu .card {
+    background-color: #ffffff;
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    font-size: 20px;
+    color: #333;
+    text-decoration: none;
+    transition: transform 0.3s, background-color 0.3s;
+    position: relative;
+    cursor: pointer;
+}
+
+.card-menu .card:hover {
+    transform: translateY(-5px);
+    background-color: #f0f0f0;
+}
+
+/* 下拉選單 for 個人資訊 */
+.card.dropdown .dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    min-width: 150px;
+    z-index: 100;
+    padding: 10px 0;
+}
+
+.card.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-content a {
+    display: block;
+    padding: 10px 20px;
+    text-decoration: none;
+    color: #333;
+}
+
+.dropdown-content a:hover {
+    background-color: #eee;
+}

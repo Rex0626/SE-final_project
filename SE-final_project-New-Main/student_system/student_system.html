@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高雄大學激發學生創意競賽管理系統</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <style>
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 40px;
+            gap: 15px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+        }
+        
+    </style>
+</head>
+<body>
+  <header>
+    <h1>高雄大學激發學生創意競賽管理系統</h1>
+    <!-- 大按鈕：返回首頁 -->
+    <a href="../main.html" class="back-btn">返回首頁</a>
+  </header>
+
+    <div class="button-group">
+        <button type="button" onclick="check_register_team()" class="glow-on-hover">報名參賽</button>
+        <button type="button" onclick="view_announcements()" class="glow-on-hover">查看得獎公告</button>
+        <button type="button" onclick="checkAndRedirect()" class="glow-on-hover">修改隊伍成員</button>
+        <button type="button" onclick="upload_submission()" class="glow-on-hover">上傳作品</button>
+        <button type="button" onclick="list_submissions()" class="glow-on-hover">查詢隊伍成績</button>
+        <button type="button" onclick="stu_data()" class="glow-on-hover">修改個人資料</button>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 國立高雄大學 - 激發學生創意競賽管理系統</p>
+    </footer>
+
+    <script src="../scripts.js"></script>
+
+    <script>
+    function checkAndRedirect() {
+        fetch('check_team.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                localStorage.setItem('teamData', JSON.stringify(data.data));
+                window.location.href = 'update_team.html';
+            } else {
+                alert(data.message);
+                window.location.href = 'student_system.html';
+            }
+        });
+    }
+    function check_register_team() {
+        window.location.href = 'check_register_team.php';
+    }
+    function list_submissions() {
+        window.location.href = 'eval_list.php';
+    }
+    function upload_submission() {
+        window.location.href = 'upload_submission.html';
+    }
+    function view_announcements() {
+        window.location.href = 'view_announcements.html';
+    }
+    function stu_data() {
+        window.location.href = 'stu_data.php';
+    }
+    </script>
+</body>
+</html>

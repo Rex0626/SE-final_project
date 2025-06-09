@@ -1,0 +1,69 @@
+<script>
+// 閒置時間上限：10 分鐘（單位：毫秒）
+const timeoutDuration = 10 * 1000;
+
+let timeoutHandle = setTimeout(showIdleWarning, timeoutDuration);
+
+// 重設計時器函式
+function resetTimer() {
+    clearTimeout(timeoutHandle);
+    timeoutHandle = setTimeout(showIdleWarning, timeoutDuration);
+}
+
+// 顯示提示視窗並導向登出
+function showIdleWarning() {
+    const userConfirmed = confirm("您已閒置超過 10 分鐘，系統即將登出。請按「確定」繼續。");
+    if (userConfirmed) {
+        window.location.href = "../login.html?role=Teacher";
+    }
+}
+
+// 監聽使用者互動事件來重設計時器
+['click', 'mousemove', 'keydown', 'scroll'].forEach(evt => {
+    window.addEventListener(evt, resetTimer);
+});
+</script>
+
+
+<?php
+session_start();
+require_once 'db_connect.php';
+
+if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'teacher') {
+    header('Location: ../login.html?role=Teacher');
+    exit();
+}
+?>
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>指導老師介面</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <h1>高雄大學激發學生創意競賽指導教師系統</h1>
+    </header>
+
+    <nav>
+        <ul class="drop-down-menu">
+            <li><a href="view_my_data/view_data.php" style="color: #FFEFD4;">瀏覽隊伍資料</a></li>
+            <li><a href="view_rank/view_rank.php" style="color: #FFEFD4;">瀏覽競賽資料</a></li>
+            <li><a href="modify_my_data/modify_data.php" style="color: #FFEFD4;">瀏覽與修改個人資料</a></li>
+        </ul>
+    </nav>
+
+    <a href="../logout.php" class="logout-button" style="color: #241E1E;">登出</a>
+
+    <div class="main-content">
+        <p>歡迎使用指導教師系統，請從上方選單選擇功能。</p>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 國立高雄大學 - 激發學生創意競賽指導教師系統</p>
+    </footer>
+</body>
+</html>

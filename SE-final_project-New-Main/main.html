@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高雄大學激發學生創意競賽管理系統</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body style="background-color: #FFF9F4;">
+    <header>
+        <h1><font color="#FFF9F4">高雄大學激發學生創意競賽管理系統</font></h1>
+    </header>
+
+    <div class="subsystem-container">
+        <div class="subsystem">
+            <a href="login.html?role=Admin">管理員</a>
+        </div>
+        <div class="subsystem">
+            <a href="login.html?role=Student">學生</a>
+        </div>
+        <div class="subsystem">
+            <a href="login.html?role=Teacher">老師</a>
+        </div>
+        <div class="subsystem">
+            <a href="login.html?role=Judge">評審</a>    
+        </div>
+    </div>    
+
+    <div class="carousel">
+        <div class="carousel-images" id="carousel-images">
+            <img src="main/1.jpg" alt="公告圖片1" onclick="openModal(this)">
+            <img src="main/2.jpg" alt="公告圖片2" onclick="openModal(this)">
+            <img src="main/3.jpg" alt="公告圖片3" onclick="openModal(this)">
+        </div>
+        <div class="carousel-buttons">
+            <button onclick="prevSlide()">&#10094;</button>
+            <button onclick="nextSlide()">&#10095;</button>
+        </div>
+    </div>    
+    
+    <div class="news-container">
+        <div class="news-header">
+            <span>最新消息</span>
+        </div>
+        <ul class="news-list" id="dynamic-news-list">
+            <!-- 動態載入的公告將插入在這裡 -->
+        </ul>
+        <div class="more-link">
+            <a href="more.html">更多消息...</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 國立高雄大學 - 激發學生創意競賽管理系統</p>
+    </footer>
+
+    <script src="main/scripts.js"></script> <!-- 引入 JavaScript 文件 -->
+
+    <script>
+        // 動態載入公告HTML片段
+        fetch('./admin_system/manage_announcement/homepage_announcements.html')
+            .then(response => {
+            if (!response.ok) {
+                throw new Error('載入公告失敗');
+            }
+            return response.text();
+            })
+            .then(html => {
+            document.getElementById('dynamic-news-list').innerHTML = html;
+            })
+            .catch(error => {
+            console.error(error);
+            document.getElementById('dynamic-news-list').innerHTML = '<li>目前無公告。</li>';
+            });
+    </script>
+
+
+
+</body>
+
+</html>

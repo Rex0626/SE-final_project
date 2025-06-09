@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>查隊伍成績｜作品成績與公告</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 2rem auto; }
+    h1 { text-align: center;}
+    section { margin-top: 2rem; }
+    a { color: #0066cc; text-decoration: none; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ccc; padding: 0.5rem; }
+    th { background: #f4f4f4; }
+    .btn-back { margin-top: 1rem; display: inline-block; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>作品成績與公告</h1>
+  </header>
+  
+  <p><a class="glow-on-hover" href="student_system.html">回上一頁</a></p>
+
+  <div id="content">載入中⋯⋯</div>
+
+  <script>
+    // 從 query string 拿 team_id
+    const params = new URLSearchParams(location.search);
+    const teamId = params.get('team_id');
+    if (!teamId) {
+      document.getElementById('content').innerHTML = '<p style="color:red">未指定 team_id</p>';
+      throw '';
+    }
+
+    fetch(`view_results.php?team_id=${teamId}`)
+      .then(r=>r.json())
+      .then(data=>{
+        if (!data.success) {
+          document.getElementById('content').innerHTML =
+            `<p style="color:red">${data.error}</p>`;
+          return;
+        }
+        let html = '';
+
+        // 作品資訊
+        html += `<section>
+          <h2>作品資訊</h2>
+          <p>說明：${data.work.Description||'—'}</p>
+          <p>Poster：${data.work.Poster
+            ? `<a href="${data.work.Poster}" target="_blank">連結</a>`
+            : '—'}</p>
+          <p>Video：${data.work.VideoLink
+            ? `<a href="${data.work.VideoLink}" target="_blank">連結</a>`
+            : '—'}</p>
+          <p>Code：${data.work.CodeLink
+            ? `<a href="${data.work.CodeLink}" target="_blank">連結</a>`
+            : '—'}</p>
+          <p><small>上傳時間：${data.work.created_at||'—'}</small></p>
+        </section>`;
+
+        // 評分清單
+        html += `<section>
+          <h2>評分清單</h2>`;
+        if (data.evaluations.length) {
+          html += `<table>
+            <thead><tr><th>#</th><th>分數</th><th>評語</th><th>時間</th></tr></thead>
+            <tbody>`;
+          data.evaluations.forEach((e,i)=>{
+            html += `<tr>
+              <td>${i+1}</td>
+              <td>${e.Score}</td>
+              <td>${e.Comments||'—'}</td>
+              <td>${e.created_at}</td>
+            </tr>`;
+          });
+          html += `</tbody></table>`;
+        } else {
+          html += '<p>尚未有評分。</p>';
+        }
+        html += `</section>`;
+
+        // 最新公告
+        html += `<section>
+          <h2>最新公告</h2>`;
+        if (data.announcements.length) {
+          data.announcements.forEach(a=>{
+            html += `<article>
+              <h3>${a.Title} （${a.Year}）</h3>
+              <p>${a.Content}</p>
+            </article>`;
+          });
+        } else {
+          html += '<p>目前沒有公告。</p>';
+        }
+        html += `</section>`;
+
+        document.getElementById('content').innerHTML = html;
+      })
+      .catch(err=>{
+        console.error(err);
+        document.getElementById('content').innerHTML =
+          '<p style="color:red">載入失敗，請稍後再試。</p>';
+      });
+  </script>
+</body>
+</html>

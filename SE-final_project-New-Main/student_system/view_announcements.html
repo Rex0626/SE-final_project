@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title>得獎公告一覽｜激發學生創意競賽</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <style>
+    /* — Reset & Base — */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+    a.back-btn {
+      display: inline-block;
+      margin-bottom: 1rem;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color .2s;
+      top: 50px;
+    }
+
+    /* — Header — */
+    header {
+      padding: 2rem 1rem;
+      border-radius: 8px;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    header h1 {
+      font-size: 2rem;
+    }
+
+    /* — Announcement Cards — */
+    .announcements {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    @media(min-width: 600px) {
+      .announcements { grid-template-columns: 1fr 1fr; }
+    }
+    .announcement {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform .2s;
+    }
+    .announcement:hover {
+      transform: translateY(-4px);
+    }
+    .announcement-header {
+      background: #0066cc;
+      color: #fff;
+      padding: 1rem;
+    }
+    .announcement-header h2 {
+      font-size: 1.25rem;
+    }
+    .announcement-body {
+      padding: 1rem;
+      flex: 1;
+    }
+    .announcement-body p {
+      margin-bottom: 1rem;
+    }
+    .announcement-footer {
+      background: #f4f4f4;
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
+      color: #555;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>得獎公告一覽</h1>
+  </header>
+
+  <main>
+    <a class="back-btn" href="student_system.html">← 返回學生系統</a>
+    <div id="list" class="announcements">
+      <p>載入中⋯⋯</p>
+    </div>
+  </main>
+
+  <script>
+    fetch('view_announcements.php')
+      .then(r => r.json())
+      .then(data => {
+        const container = document.getElementById('list');
+        if (!data.success) {
+          container.innerHTML = `<p style="color:red">錯誤：${data.error}</p>`;
+          return;
+        }
+        const anns = data.announcements;
+        if (!anns.length) {
+          container.innerHTML = '<p>目前沒有任何公告。</p>';
+          return;
+        }
+        container.innerHTML = anns.map(item => `
+          <div class="announcement">
+            <div class="announcement-header">
+              <h2>${item.Title} （${item.Year}）</h2>
+            </div>
+            <div class="announcement-body">
+              <p>${item.Content}</p>
+            </div>
+            <div class="announcement-footer">
+              發布時間：${item.created_at}
+            </div>
+          </div>
+        `).join('');
+      })
+      .catch(err => {
+        document.getElementById('list').innerHTML =
+          `<p style="color:red">載入失敗：${err}</p>`;
+      });
+  </script>
+</body>
+</html>
