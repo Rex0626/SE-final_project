@@ -136,7 +136,11 @@
       btn.textContent = '上傳中...';
 
       try {
-        const resp = await fetch(form.action, { method: 'POST', body: data });
+        const resp = await fetch(form.action, {
+                   method: "POST",
+               body: data,
+                   credentials: "include"      // ← 關鍵！
+                  });
         const result = await resp.json();
         const card = document.getElementById('upload-card');
         card.innerHTML = '';
