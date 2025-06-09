@@ -1,50 +1,56 @@
 <?php
-// upload_submission.php   2025-06-09 不依賴 Session 版
+// upload_submission.php
 header('Content-Type: application/json; charset=utf-8');
-require_once 'config.php';     // callSupabase()
+require_once 'config.php';          // 你自己的 callSupabase() 函式
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(['success'=>false,'error'=>'只能用 POST']);
-    exit;
-}
+// ╭──────────────────────────────────────────────────╮
+// │ 1) 讀取 POST 參數（全部用資料表同名）             │
+// ╰──────────────────────────────────────────────────╯
+$team_id     = trim($_POST['team_id']          ?? '');
+$description = trim($_POST['work_description'] ?? '');
+$poster_url  = trim($_POST['poster_url']       ?? '');
+$video_url   = trim($_POST['video_url']        ?? '');
+$code_url    = trim($_POST['code_url']         ?? '');
 
-$team_id = $_POST['team_id'] ?? '';
+// (1) team_id 必填
 if ($team_id === '') {
-    echo json_encode(['success'=>false,'error'=>'缺少 team_id，請重新登入']);
+    echo json_encode([
+        'success' => false,
+        'error'   => '缺少 team_id，請重新登入'
+    ]);
+    exit;
+}
+// (2) description 亦必填
+if ($description === '') {
+    echo json_encode([
+        'success' => false,
+        'error'   => '作品說明不能空白'
+    ]);
     exit;
 }
 
-/* -------- 讀表單欄位 -------- */
-$desc      = trim($_POST['work_description'] ?? '');
-$posterUrl = trim($_POST['poster_url']       ?? '');
-$videoUrl  = trim($_POST['video_url']        ?? '');
-$codeUrl   = trim($_POST['code_url']         ?? '');
+// ╭──────────────────────────────────────────────────╮
+// │ 2) 組裝要寫入 Supabase 的資料                    │
+// ╰──────────────────────────────────────────────────╯
+$insert_data = [
+    'team_id'     => $team_id,
+    'description' => $description,
+    // 轉成 NULL 可以避免空字串被誤當有效值
+    'poster_url'  => $poster_url !== '' ? $poster_url : null,
+    'video_url'   => $video_url  !== '' ? $video_url  : null,
+    'code_url'    => $code_url   !== '' ? $code_url   : null
+];
 
-if ($desc === '') {
-    echo json_encode(['success'=>false,'error'=>'作品說明必填']);
-    exit;
+// ⚠ 如果你的 table 名叫 "Works"，路徑就是 "Works"
+$r = callSupabase('Works', 'POST', $insert_data);
+
+if ($r['status'] >= 200 && $r['status'] < 300) {
+    echo json_encode(['success' => true]);
+} else {
+    // Supabase 會帶回錯誤訊息在 $r['body'] (JSON)
+    $msg = $r['body']['message'] ?? '資料庫寫入失敗';
+    echo json_encode([
+        'success' => false,
+        'error'   => $msg
+    ]);
 }
-
-/* -------- 透過 team_id 找 WorkID -------- */
-$r = callSupabase("All-Teams?TeamID=eq.$team_id&select=WorkID", 'GET');
-if ($r['status'] !== 200 || empty($r['body'][0]['WorkID'])) {
-    echo json_encode(['success'=>false,'error'=>'查無 WorkID，請確認已建立隊伍']);
-    exit;
-}
-$work_id = $r['body'][0]['WorkID'];
-
-/* -------- 組 PATCH 欄位 -------- */
-$payload = ['updated_at' => date('c'), 'Description' => $desc];
-if ($posterUrl) $payload['Poster']    = $posterUrl;
-if ($videoUrl)  $payload['VideoLink'] = $videoUrl;
-if ($codeUrl)   $payload['CodeLink']  = $codeUrl;
-
-/* -------- 更新 Works -------- */
-$r2 = callSupabase("Works?WorkID=eq.$work_id", 'PATCH', $payload);
-if ($r2['status'] !== 200) {
-    echo json_encode(['success'=>false,'error'=>'更新失敗']);
-    exit;
-}
-
-echo json_encode(['success'=>true]);
-?>

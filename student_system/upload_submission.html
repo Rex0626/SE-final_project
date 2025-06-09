@@ -105,12 +105,13 @@
   <div class="card" id="upload-card">
     <h1>作品上傳</h1>
     <form id="upload-form" action="upload_submission.php" method="post">
-      <!-- 🔥 新增隱藏欄位，不再依賴 Session -->
+      <!-- 🔥 隱藏欄位，一律由 JS 填 team_id -->
       <input type="hidden" name="team_id" id="team_id">
 
       <p>
         <label for="desc">作品說明</label>
-        <input id="desc" name="work_description" type="text" placeholder="輸入作品簡介" required>
+        <!-- name 改為資料表欄名 description -->
+        <input id="desc" name="description" type="text" placeholder="輸入作品簡介" required>
       </p>
       <p>
         <label for="poster">Poster URL</label>
@@ -129,10 +130,15 @@
   </div>
 
   <script>
-    // 1️⃣ 一載入就把 team_id 填進隱藏欄位
-    document.getElementById('team_id').value = localStorage.getItem('team_id') || '';
+    // 1️⃣ 載入時檢查 team_id，若無則跳回登入
+    const tid = localStorage.getItem('team_id');
+    if (!tid) {
+      alert('請先登入／註冊隊伍');
+      location.href = 'student_system.html';
+    }
+    document.getElementById('team_id').value = tid;
 
-    // 2️⃣ AJAX 提交，成功後更新 UI
+    // 2️⃣ 改用 AJAX 提交，回傳成功／失敗後更新 UI
     document.getElementById('upload-form').addEventListener('submit', async e => {
       e.preventDefault();
       const form = e.target;
