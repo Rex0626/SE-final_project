@@ -105,6 +105,9 @@
   <div class="card" id="upload-card">
     <h1>作品上傳</h1>
     <form id="upload-form" action="upload_submission.php" method="post">
+      <!-- 🔥 新增隱藏欄位，不再依賴 Session -->
+      <input type="hidden" name="team_id" id="team_id">
+
       <p>
         <label for="desc">作品說明</label>
         <input id="desc" name="work_description" type="text" placeholder="輸入作品簡介" required>
@@ -126,23 +129,25 @@
   </div>
 
   <script>
-    // AJAX 提交，成功後顯示對應訊息及按鈕
+    // 1️⃣ 一載入就把 team_id 填進隱藏欄位
+    document.getElementById('team_id').value = localStorage.getItem('team_id') || '';
+
+    // 2️⃣ AJAX 提交，成功後更新 UI
     document.getElementById('upload-form').addEventListener('submit', async e => {
       e.preventDefault();
       const form = e.target;
       const data = new FormData(form);
-      const btn = form.querySelector('button');
-      btn.disabled = true;
+      const btn  = form.querySelector('button');
+      btn.disabled    = true;
       btn.textContent = '上傳中...';
 
       try {
-        const resp = await fetch(form.action, {
-                   method: "POST",
-               body: data,
-                   credentials: "include"      // ← 關鍵！
-                  });
+        const resp   = await fetch(form.action, {
+          method: "POST",
+          body: data
+        });
         const result = await resp.json();
-        const card = document.getElementById('upload-card');
+        const card   = document.getElementById('upload-card');
         card.innerHTML = '';
 
         if (result.success) {
